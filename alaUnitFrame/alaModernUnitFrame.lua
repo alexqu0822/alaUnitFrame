@@ -8,6 +8,13 @@ local math, table, string, pairs, type, select, tonumber, unpack = math, table, 
 local floor, min, max, mod = floor, min, max, mod;
 ----------------------------------------------------------------------------------------------------
 ----------
+local function UnitGetIncomingHeals(unit)
+	return 0;
+end
+local function UnitGetTotalAbsorbs(unit)
+	return 0;
+end
+
 --[[
 	There are 3 levels of layers: BACKGROUND is in the back, ARTWORK is in the middle and OVERLAY is in front. If you want to be sure that a object is before another, you must specify the level where you want to place it.
 
@@ -381,35 +388,35 @@ end
 
 
 local function HasSubPowerBar_Druid(uf)
-	local specIndex = GetSpecialization();
-	local spec = GetSpecializationInfo(specIndex);
-	if spec == 103 and uf.pType == ENERGY then
-		return true;
-	end
+	-- local specIndex = GetSpecialization();
+	-- local spec = GetSpecializationInfo(specIndex);
+	-- if spec == 103 and uf.pType == ENERGY then
+	-- 	return true;
+	-- end
 	return false;
 end
 local function HasSubPowerBar_Paladin(uf)
-	local specIndex = GetSpecialization();
-	local spec = GetSpecializationInfo(specIndex);
-	if spec == 70 then
-		return true;
-	end
+	-- local specIndex = GetSpecialization();
+	-- local spec = GetSpecializationInfo(specIndex);
+	-- if spec == 70 then
+	-- 	return true;
+	-- end
 	return false;
 end
 local function HasSubPowerBar_Mage(uf)
-	local specIndex = GetSpecialization();
-	local spec = GetSpecializationInfo(specIndex);
-	if spec == 62 then
-		return true;
-	end
+	-- local specIndex = GetSpecialization();
+	-- local spec = GetSpecializationInfo(specIndex);
+	-- if spec == 62 then
+	-- 	return true;
+	-- end
 	return false;
 end
 local function HasSubPowerBar_Monk(uf)
-	local specIndex = GetSpecialization();
-	local spec = GetSpecializationInfo(specIndex);
-	if spec == 269 then
-		return true;
-	end
+	-- local specIndex = GetSpecialization();
+	-- local spec = GetSpecializationInfo(specIndex);
+	-- if spec == 269 then
+	-- 	return true;
+	-- end
 	return false;
 end
 local function HasSubPowerBar_AlwaysShow(uf)
@@ -1373,11 +1380,11 @@ local function updateUnitFrame_T(uf, elasped)
 		updateTapped(uf);
 		updateLeader(uf);
 		if uf.questIcon then
-			if UnitIsQuestBoss('target') then
-				uf.questIcon:Show();
-			else
+			-- if UnitIsQuestBoss('target') then
+			-- 	uf.questIcon:Show();
+			-- else
 				uf.questIcon:Hide();
-			end
+			-- end
 		end
 		if UnitExists('targettarget') then
 			SecureShow(uf.TOT);
@@ -1639,7 +1646,7 @@ local function P_OnEvent(self, event, unitId, ...)
 	end
 end
 local function UNIT_LEVEL(uf)
-	local level = UnitEffectiveLevel(uf.unit);
+	local level = UnitLevel(uf.unit);
 	if level and level > 0 then
 		uf.fontStringLevel:SetText(level);
 		local color = GetCreatureDifficultyColor(level);
@@ -1697,12 +1704,12 @@ local function T_OnEvent(self, event, unitId, ...)
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		PLAYER_TARGET_CHANGED(T);
 
-	elseif event == "UNIT_ABSORB_AMOUNT_CHANGED" then
-		updateHealPrediction_and_Absorb(T);
-	elseif event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" then
-		--UNIT_HEAL_ABSORB_AMOUNT_CHANGED(T);
-	elseif event == "UNIT_HEAL_PREDICTION" then
-		updateHealPrediction_and_Absorb(T);
+	-- elseif event == "UNIT_ABSORB_AMOUNT_CHANGED" then
+	-- 	updateHealPrediction_and_Absorb(T);
+	-- elseif event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" then
+	-- 	--UNIT_HEAL_ABSORB_AMOUNT_CHANGED(T);
+	-- elseif event == "UNIT_HEAL_PREDICTION" then
+	-- 	updateHealPrediction_and_Absorb(T);
 
 	elseif event == "RAID_TARGET_UPDATE" then
 		RAID_TARGET_UPDATE(T);
@@ -1843,12 +1850,12 @@ local function P_Init()
 	P:RegisterEvent("PLAYER_REGEN_ENABLED");
 	P:RegisterEvent("PLAYER_REGEN_DISABLED");
 	P:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
-	P:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", 'player');
+	-- P:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", 'player');
 	P:RegisterEvent("UNIT_DISPLAYPOWER");
 
-	P:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", 'player');
-	P:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", 'player');
-	P:RegisterUnitEvent("UNIT_HEAL_PREDICTION", 'player');
+	-- P:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", 'player');
+	-- P:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", 'player');
+	-- P:RegisterUnitEvent("UNIT_HEAL_PREDICTION", 'player');
 
 	P:RegisterEvent("RAID_TARGET_UPDATE");
 
@@ -1919,9 +1926,9 @@ local function T_Init()
 	T:RegisterEvent("UNIT_DISPLAYPOWER");
 	T:RegisterEvent("PLAYER_ENTERING_WORLD");
 
-	T:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", 'target');
-	T:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", 'target');
-	T:RegisterUnitEvent("UNIT_HEAL_PREDICTION", 'target');
+	-- T:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", 'target');
+	-- T:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", 'target');
+	-- T:RegisterUnitEvent("UNIT_HEAL_PREDICTION", 'target');
 
 	T:RegisterEvent("RAID_TARGET_UPDATE");
 

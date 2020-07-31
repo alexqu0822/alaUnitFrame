@@ -5,7 +5,7 @@
     <Include file="CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
     <!-- <Include file="LibClassicMobHealthGuid-1.0\lib.xml"/> -->
     <Include file="LibClassicDurations\LibClassicDurations.xml"/>
-    <Include file="LibThreatClassic2\lib.xml"/>
+    <!-- <Include file="LibThreatClassic2\lib.xml"/> -->
 
 
 </Ui>

@@ -3,10 +3,9 @@
 --]]--
 ----------------------------------------------------------------------------------------------------
 local ADDON, NS = ...;
-local _G = _G;
 
+local _G = _G;
 do
-	local _G = _G;
 	if NS.__fenv == nil then
 		NS.__fenv = setmetatable({  },
 				{
@@ -28,9 +27,11 @@ local defConfig = {
 	pRelY = -200,
 	tRelX = 200,
 	tRelY = -200,
+	dark = false,
 	playerTexture = 0,
 	castBar = false,
 	power_restoration = true,
+	power_restoration_full = true,
 	extra_power0 = true,
 
 	partyAura = true,
@@ -72,7 +73,7 @@ end
 local function initConfig(configKey)
 	-- tinsert(alaUnitFrameSV.configKeys, configKey);
 	alaUnitFrameSV[configKey] = alaUnitFrameSV[configKey] or {  };
-	for k, v in pairs(alaUnitFrameSV.general) do
+	for k, v in next, alaUnitFrameSV.general do
 		if alaUnitFrameSV[configKey][k] == nil then
 			alaUnitFrameSV[configKey][k] = v;
 		end
@@ -81,19 +82,18 @@ end
 ----------------------------------------------------------------------------------------------------upvalue
 	----------------------------------------------------------------------------------------------------upvalue LUA
 	local math, table, string, bit = math, table, string, bit;
-	local type = type;
-	local assert, collectgarbage, date, difftime, error, getfenv, getmetatable, loadstring, next, newproxy, pcall, select, setfenv, setmetatable, time, type, unpack, xpcall, rawequal, rawget, rawset =
-			assert, collectgarbage, date, difftime, error, getfenv, getmetatable, loadstring, next, newproxy, pcall, select, setfenv, setmetatable, time, type, unpack, xpcall, rawequal, rawget, rawset;
-	local abs, acos, asin, atan, atan2, ceil, cos, deg, exp, floor, fmod, frexp, ldexp, log, log10, max, min, mod, rad, random, sin, sqrt, tan, fastrandom =
-			abs, acos, asin, atan, atan2, ceil, cos, deg, exp, floor, fmod or math.fmod, frexp, ldexp, log, log10, max, min, mod, rad, random, sin, sqrt, tan, fastrandom;
-	local format, gmatch, gsub, strbyte, strchar, strfind, strlen, strlower, strmatch, strrep, strrev, strsub, strupper, tonumber, tostring =
-			format, gmatch, gsub, strbyte, strchar, strfind, strlen, strlower, strmatch, strrep, strrev, strsub, strupper, tonumber, tostring;
-	local strcmputf8i, strlenutf8, strtrim, strsplit, strjoin, strconcat, tostringall = strcmputf8i, strlenutf8, strtrim, strsplit, strjoin, strconcat, tostringall;
-	local ipairs, pairs, sort, tContains, tinsert, tremove, wipe = ipairs, pairs, sort, tContains, tinsert, tremove, wipe;
-	local gcinfo, foreach, foreachi, getn = gcinfo, foreach, foreachi, getn;	-- Deprecated
+	local type, tonumber, tostring = type, tonumber, tostring;
+	local getfenv, setfenv, pcall, xpcall, assert, error, loadstring = getfenv, setfenv, pcall, xpcall, assert, error, loadstring;
+	local abs, ceil, floor, max, min, random, sqrt = abs, ceil, floor, max, min, random, sqrt;
+	local format, gmatch, gsub, strbyte, strchar, strfind, strlen, strlower, strmatch, strrep, strrev, strsub, strupper, strtrim, strsplit, strjoin, strconcat =
+			format, gmatch, gsub, strbyte, strchar, strfind, strlen, strlower, strmatch, strrep, strrev, strsub, strupper, strtrim, strsplit, strjoin, strconcat;
+	local getmetatable, setmetatable, rawget, rawset = getmetatable, setmetatable, rawget, rawset;
+	local next, ipairs, pairs, sort, tContains, tinsert, tremove, wipe, unpack = next, ipairs, pairs, sort, tContains, tinsert, tremove, wipe, unpack;
+	local tConcat = table.concat;
+	local select = select;
+	local date, time = date, time;
 	----------------------------------------------------------------------------------------------------upvalue GAME
 	local _ = nil;
-	----------------------------------------------------------------------------------------------------
 	local TargetFrame = TargetFrame;
 	local PlayerFrame = PlayerFrame;
 	local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS;
@@ -112,6 +112,7 @@ if LOCALE == 'zhCN' or LOCALE == 'zhTW' then
 	L["x_offset_of_TargetFrame"] = "目标头像横向位移";
 	L["y_offset_of_TargetFrame"] = "目标头像纵向位移";
 
+	L["dark_portraid_texture"] = "暗色头像纹理";
 	L["playerTexture"] = "玩家头像纹理";
 	L["playerTexture_0"] = "普通";
 	L["playerTexture_1"] = "稀有";
@@ -120,6 +121,7 @@ if LOCALE == 'zhCN' or LOCALE == 'zhTW' then
 	L["move_castbar_to_top_of_portrait"] = "施法条移动到头像上方";
 
 	L["mana_and_energy_regen_indicator"] = "法系五回和贼德能量回复";
+	L["mana_and_energy_regen_indicator_full"] = "满能量时显示法系五回和贼德能量回复\n（所谓走喝）";
 	L["mana_for_druid"] = "德鲁伊变形法力值";
 	L["target_of_party_member"] = "小队成员目标";
 	L["party_aura"] = "小队成员BUFF和DEBUFF";
@@ -150,6 +152,7 @@ else
 	L["x_offset_of_TargetFrame"] = "x offset of TargetFrame";
 	L["y_offset_of_TargetFrame"] = "y offset of TargetFrame";
 
+	L["dark_portraid_texture"] = "Dark texture for portrait";
 	L["playerTexture"] = "Texture of player portrait";
 	L["playerTexture_0"] = "Normal";
 	L["playerTexture_1"] = "Rare";
@@ -158,6 +161,7 @@ else
 	L["move_castbar_to_top_of_portrait"] = "move castbar";
 
 	L["mana_and_energy_regen_indicator"] = "Mana and energy regen indicator";
+	L["mana_and_energy_regen_indicator_full"] = "Mana and energy regen indicator When power is full";
 	L["mana_for_druid"] = "Mana for druid";
 	L["target_of_party_member"] = "Target of party";
 	L["party_aura"] = "Buffs & debuffs of party member";
@@ -183,7 +187,23 @@ else
 	L["scale"] = "Scale";
 end
 local texture_unk = "Interface\\Icons\\inv_misc_questionmark";
-local texture_rare_elite = 'Interface\\TargetingFrame\\UI-TargetingFrame-Rare-Elite.blp'
+local texture_portrait_border = {
+	"Interface\\TargetingFrame\\UI-TargetingFrame",
+	"Interface\\TargetingFrame\\UI-TargetingFrame-Rare",
+	"Interface\\TargetingFrame\\UI-TargetingFrame-Rare-Elite",
+	"Interface\\TargetingFrame\\UI-TargetingFrame-Elite",
+	"Interface\\TargetingFrame\\UI-SmallTargetingFrame",
+	"Interface\\TargetingFrame\\UI-TargetofTargetFrame",
+	"Interface\\TargetingFrame\\UI-PartyFrame",
+	--
+	"Interface\\AddOns\\alaUnitFrame\\ARTWORK\\UI-TargetingFrame",
+	"Interface\\AddOns\\alaUnitFrame\\ARTWORK\\UI-TargetingFrame-Rare",
+	"Interface\\AddOns\\alaUnitFrame\\ARTWORK\\UI-TargetingFrame-Rare-Elite",
+	"Interface\\AddOns\\alaUnitFrame\\ARTWORK\\UI-TargetingFrame-Elite",
+	"Interface\\AddOns\\alaUnitFrame\\ARTWORK\\UI-SmallTargetingFrame",
+	"Interface\\AddOns\\alaUnitFrame\\ARTWORK\\UI-TargetofTargetFrame",
+	"Interface\\AddOns\\alaUnitFrame\\ARTWORK\\UI-PartyFrame",
+};
 
 local function _log_(...)
 	-- print(date('\124cff00ff00%H:%M:%S\124r'), ...);
@@ -214,7 +234,8 @@ local _void_meta = {
 -- local LibClassicMobHealthGuid = LibStub("LibClassicMobHealthGuid-1.0");
 local LibClassicDurations = LibStub("LibClassicDurations");
 LibClassicDurations:Register(NAME);
-local ThreatLib = LibStub:GetLibrary("LibThreatClassic2");
+
+local UnitDetailedThreatSituation = UnitDetailedThreatSituation;
 
 local function _get_health_(unit)
 	-- return LibClassicMobHealthGuid:GetUnitHealth(unit);
@@ -445,13 +466,11 @@ local function ResetTPos()
 end
 
 local function SetPTexture(PU, index)
-	local texture = {
-		"Interface\\TargetingFrame\\UI-TargetingFrame",
-		"Interface\\TargetingFrame\\UI-TargetingFrame-Rare",
-		"Interface\\TargetingFrame\\UI-TargetingFrame-Rare-Elite",
-		"Interface\\TargetingFrame\\UI-TargetingFrame-Elite",
-	};
-	PU.BG:SetTexture(texture[index + 1]);
+	if alaUnitFrameSV.dark then
+		PU.BG:SetTexture(texture_portrait_border[index + 8]);
+	else
+		PU.BG:SetTexture(texture_portrait_border[index + 1]);
+	end
 end
 
 ----------------------------------------------------------------
@@ -474,7 +493,7 @@ end
 function UF.toggle(configKey, key, v)
 	if configKey == 'general' then
 		alaUnitFrameSV.general[key] = v;
-		for unit, U in pairs(UF.frames) do
+		for unit, U in next, UF.frames do
 			alaUnitFrameSV[U.configKey][key] = v;
 			if U[key] then
 				if v then
@@ -499,7 +518,7 @@ function UF.toggle(configKey, key, v)
 				U[key]:Hide();
 			end
 		else
-			for unit, U in pairs(UF.frames) do
+			for unit, U in next, UF.frames do
 				if U.configKey == configKey then
 					if U[key] then
 						if v then
@@ -521,7 +540,7 @@ end
 function UF.set_value(configKey, key, v)
 	if configKey == 'general' then
 		alaUnitFrameSV.general[key] = v;
-		for unit, U in pairs(UF.frames) do
+		for unit, U in next, UF.frames do
 			alaUnitFrameSV[U.configKey][key] = v;
 			if U[key] then
 				if v then
@@ -546,7 +565,7 @@ function UF.set_value(configKey, key, v)
 				U[key](U, v);
 			end
 		else
-			for unit, U in pairs(UF.frames) do
+			for unit, U in next, UF.frames do
 				if U.configKey == configKey then
 					if U[key] then
 						if v then
@@ -652,13 +671,23 @@ function UF.create_extra_power0(U, unit, portraitPos, perOfs)
 		extra_power_restoration_spark:SetWidth(10);
 		extra_power_restoration_spark:SetBlendMode("ADD");
 		extra_power_restoration_spark:Hide();
-		extra_power0:SetScript("OnUpdate", function(self)
+		local extra_power_restoration_delay5_spark = U:CreateTexture(nil, "OVERLAY", nil, 7);
+		extra_power_restoration_delay5_spark:SetTexture("Interface\\CastingBar\\ui-castingbar-sparkred");
+		extra_power_restoration_delay5_spark:SetPoint("CENTER", U.PB, "LEFT");
+		extra_power_restoration_delay5_spark:SetWidth(15);
+		extra_power_restoration_delay5_spark:SetBlendMode("ADD");
+		extra_power_restoration_delay5_spark:Hide();
+			extra_power0:SetScript("OnUpdate", function(self)
 			if extra_power_restoration_spark:IsShown() then
 				local TIME = GetTime();
 				if U.power_restoration_wait_timer then
-					extra_power_restoration_spark:ClearAllPoints();
-					extra_power_restoration_spark:SetPoint("CENTER", extra_power0, "LEFT", self:GetWidth() * (U.power_restoration_wait_timer - TIME) / 5.0, 0);
-				elseif U.power_restoration_time_timer then
+					extra_power_restoration_delay5_spark:Show();
+					extra_power_restoration_delay5_spark:ClearAllPoints();
+					extra_power_restoration_delay5_spark:SetPoint("CENTER", extra_power0, "LEFT", self:GetWidth() * (U.power_restoration_wait_timer - TIME) / 5.0, 0);
+				else
+					extra_power_restoration_delay5_spark:Hide();
+				end
+				if U.power_restoration_time_timer then
 					extra_power_restoration_spark:ClearAllPoints();
 					extra_power_restoration_spark:SetPoint("CENTER", extra_power0, "RIGHT", - self:GetWidth() * (U.power_restoration_time_timer - TIME) / U.power_restoration_time, 0);
 				end
@@ -668,10 +697,15 @@ function UF.create_extra_power0(U, unit, portraitPos, perOfs)
 			local pv, pmv = UnitPower(unit, 0), UnitPowerMax(unit, 0);
 			self:SetMinMaxValues(0, pmv);
 			self:SetValue(pv);
-			if alaUnitFrameSV.power_restoration and pv < pmv then
+			if alaUnitFrameSV.power_restoration and (alaUnitFrameSV.power_restoration_full or pv < pmv) then
 				extra_power_restoration_spark:Show();
 			else
 				extra_power_restoration_spark:Hide();
+			end
+			if alaUnitFrameSV.power_restoration and U.power_restoration_wait_timer then
+				extra_power_restoration_delay5_spark:Show();
+			else
+				extra_power_restoration_delay5_spark:Hide();
 			end
 			if getConfig(configKey, "pVal") then
 				epVal:SetText(pv .. " / " .. pmv);
@@ -728,9 +762,10 @@ function UF.create_extra_power0(U, unit, portraitPos, perOfs)
 		extra_power0.UPDATE_SHAPESHIFT_FORM(extra_power0, "UPDATE_SHAPESHIFT_FORM");
 		U.extra_power0 = extra_power0;
 		U.extra_power_restoration_spark = extra_power_restoration_spark;
+		U.extra_power_restoration_delay5_spark = extra_power_restoration_delay5_spark;
 		U.epVal = epVal;
 		U.epPer = epPer;
-		if U.LEVEL < 20 then
+		if U.LEVEL < 10 then
 			extra_power_restoration_spark:SetAlpha(0.0);
 		end
 	end
@@ -1261,6 +1296,12 @@ function UF.create_power_restoration(U, unit)	-- TODO timer for different power 
 	power_restoration_spark:SetWidth(10);
 	power_restoration_spark:SetBlendMode("ADD");
 	power_restoration_spark:Hide();
+	local power_restoration_delay5_spark = U:CreateTexture(nil, "OVERLAY", nil, 7);
+	power_restoration_delay5_spark:SetTexture("Interface\\CastingBar\\ui-castingbar-sparkred");
+	power_restoration_delay5_spark:SetPoint("CENTER", U.PB, "LEFT");
+	power_restoration_delay5_spark:SetWidth(15);
+	power_restoration_delay5_spark:SetBlendMode("ADD");
+	power_restoration_delay5_spark:Hide();
 	local update_timer = GetTime() + power_restoration_UPDATE_INTERVAL;
 	U:HookScript("OnUpdate", function(self)
 		local TIME = GetTime();
@@ -1276,11 +1317,19 @@ function UF.create_power_restoration(U, unit)	-- TODO timer for different power 
 		if TIME >= self.power_restoration_time_timer then
 			self.power_restoration_time_timer = self.power_restoration_time_timer + self.power_restoration_time;
 		end
-		if power_restoration_spark:IsShown() then
+		if power_restoration_delay5_spark:IsShown() then
 			if self.powerType == 0 and self.power_restoration_wait_timer then
+				power_restoration_delay5_spark:ClearAllPoints();
+				power_restoration_delay5_spark:SetPoint("CENTER", U.PB, "LEFT", U.PB:GetWidth() * (self.power_restoration_wait_timer - TIME) / power0_restoration_wait, 0);
+			else
+				power_restoration_delay5_spark:Hide();
+			end
+		end
+		if power_restoration_spark:IsShown() then
+			--[[if self.powerType == 0 and self.power_restoration_wait_timer then
 				power_restoration_spark:ClearAllPoints();
 				power_restoration_spark:SetPoint("CENTER", U.PB, "LEFT", U.PB:GetWidth() * (self.power_restoration_wait_timer - TIME) / power0_restoration_wait, 0);
-			elseif self.power_restoration_time_timer then
+			else]]if self.power_restoration_time_timer then
 				power_restoration_spark:ClearAllPoints();
 				power_restoration_spark:SetPoint("CENTER", U.PB, "RIGHT", - U.PB:GetWidth() * (self.power_restoration_time_timer - TIME) / self.power_restoration_time, 0);
 			end
@@ -1311,10 +1360,15 @@ function UF.create_power_restoration(U, unit)	-- TODO timer for different power 
 		end
 		curPowers[powerType] = UnitPower(unit, powerType);
 		maxPowers[powerType] = UnitPowerMax(unit, powerType);
-		if alaUnitFrameSV.power_restoration and self.power_restoration_exec and curPowers[powerType] < maxPowers[powerType] then
+		if self.power_restoration_exec and alaUnitFrameSV.power_restoration and (alaUnitFrameSV.power_restoration_full or (curPowers[powerType] < maxPowers[powerType])) then
 			power_restoration_spark:Show();
 		else
 			power_restoration_spark:Hide();
+		end
+		if alaUnitFrameSV.power_restoration and self.power_restoration_wait_timer then
+			power_restoration_delay5_spark:Show();
+		else
+			power_restoration_delay5_spark:Hide();
 		end
 	end
 	function U.UNIT_SPELLCAST_SUCCEEDED(self, event, unitId, ...)
@@ -1323,6 +1377,7 @@ function UF.create_power_restoration(U, unit)	-- TODO timer for different power 
 			self.power_restoration_wait_timer = GetTime() + power0_restoration_wait;
 			if self.powerType == 0 and alaUnitFrameSV.power_restoration then
 				power_restoration_spark:Show();
+				power_restoration_delay5_spark:Show();
 			end
 		end
 		curPowers[0] = curPower0;
@@ -1340,7 +1395,7 @@ function UF.create_power_restoration(U, unit)	-- TODO timer for different power 
 		local maxPower = UnitPowerMax(unit, powerType);
 		local curPower = UnitPower(unit, powerType);
 		if maxPower ~= maxPowers[powerType] then
-			if alaUnitFrameSV.power_restoration and self.power_restoration_exec and curPower < maxPower then
+			if alaUnitFrameSV.power_restoration and (alaUnitFrameSV.power_restoration_full or (self.power_restoration_exec and curPower < maxPower)) then
 				power_restoration_spark:Show();
 			else
 				power_restoration_spark:Hide();
@@ -1356,7 +1411,7 @@ function UF.create_power_restoration(U, unit)	-- TODO timer for different power 
 				if not self.power_restoration_wait_timer and UF.guess_tick_is_mana_regen(self, curPower - curPowers[0]) then
 					self.power_restoration_time_timer = GetTime() + self.power_restoration_time;
 				end
-				if self.powerType == 0 and curPower >= maxPowers[0] then
+				if self.powerType == 0 and curPower >= maxPowers[0] and not alaUnitFrameSV.power_restoration_full then
 					power_restoration_spark:Hide();
 				end
 				curPowers[0] = curPower;
@@ -1377,7 +1432,7 @@ function UF.create_power_restoration(U, unit)	-- TODO timer for different power 
 					if abs((curPower - curPowers[3]) - GetPowerRegen() * self.power_restoration_time) < 0.5 then
 						self.power_restoration_time_timer = GetTime() + self.power_restoration_time;
 					end
-					if curPower >= maxPowers[3] then
+					if curPower >= maxPowers[3] and not alaUnitFrameSV.power_restoration_full then
 						power_restoration_spark:Hide();
 					end
 				end
@@ -1401,6 +1456,7 @@ function UF.create_power_restoration(U, unit)	-- TODO timer for different power 
 	U.curPowers = curPowers;
 	U.maxPowers = maxPowers;
 	U.power_restoration_spark = power_restoration_spark;
+	U.power_restoration_delay5_spark = power_restoration_delay5_spark;
 	if U.LEVEL < 20 then
 		-- power_restoration_spark:SetAlpha(0.0);
 	end
@@ -1408,14 +1464,35 @@ end
 function UF.toggle_power_restoration(on)
 	-- if true then return; end
 	local U = UF.frames.player;
-	if U.CLASS ~= 'DRUID' and U.CLASS ~= 'ROGUE' and U.CLASS ~= 'HUNTER' and U.CLASS ~= 'PALADIN' and U.CLASS ~= 'WARLOCK' and U.CLASS ~= 'MAGE' and U.CLASS ~= 'PRIEST' and U.CLASS ~= 'SHAMAN' then
+	if U.CLASS == 'WARRIOR' then
+	-- if U.CLASS ~= 'DRUID' and U.CLASS ~= 'ROGUE' and U.CLASS ~= 'HUNTER' and U.CLASS ~= 'PALADIN' and U.CLASS ~= 'WARLOCK' and U.CLASS ~= 'MAGE' and U.CLASS ~= 'PRIEST' and U.CLASS ~= 'SHAMAN' then
 		return;
 	end
 	if on then
 		U.powerType = nil;
 		U.UPDATE_SHAPESHIFT_FORM(U, "UPDATE_SHAPESHIFT_FORM");
+		if U.extra_power0 then
+			U.extra_power0.UPDATE_SHAPESHIFT_FORM(U.extra_power0, "UPDATE_SHAPESHIFT_FORM");
+		end
 	else
-		UF.frames.player.power_restoration_spark:Hide();
+		U.power_restoration_spark:Hide();
+		U.power_restoration_delay5_spark:Hide();
+		if U.extra_power0 then
+			U.extra_power_restoration_spark:Hide();
+			U.extra_power_restoration_delay5_spark:Hide();
+		end
+	end
+end
+function UF.toggle_power_restoration_full(on)
+	local U = UF.frames.player;
+	if U.CLASS == 'WARRIOR' then
+	-- if U.CLASS ~= 'DRUID' and U.CLASS ~= 'ROGUE' and U.CLASS ~= 'HUNTER' and U.CLASS ~= 'PALADIN' and U.CLASS ~= 'WARLOCK' and U.CLASS ~= 'MAGE' and U.CLASS ~= 'PRIEST' and U.CLASS ~= 'SHAMAN' then
+		return;
+	end
+	U.powerType = nil;
+	U.UPDATE_SHAPESHIFT_FORM(U, "UPDATE_SHAPESHIFT_FORM");
+	if U.extra_power0 then
+		U.extra_power0.UPDATE_SHAPESHIFT_FORM(U.extra_power0, "UPDATE_SHAPESHIFT_FORM");
 	end
 end
 
@@ -1435,7 +1512,7 @@ function UF.createPartyAura(U, unit)
 		cd:SetReverse(true);
 		cd:SetHideCountdownNumbers(true);
 		local icon = aura:CreateTexture(nil, "BACKGROUND");
-		icon:SetAllPoints(true);
+		icon:SetAllPoints();
 		function aura:SetIcon(texture)
 			icon:SetTexture(texture);
 		end
@@ -1466,7 +1543,7 @@ function UF.createPartyAura(U, unit)
 			if index == 1 then
 				aura:SetPoint("TOPLEFT", U, "TOPLEFT", ofs_x, ofs_y);
 			else
-				if fmod(index - 1, n_icon_per_row) == 0 then
+				if (index - 1) % n_icon_per_row == 0 then
 					aura:SetPoint("TOPLEFT", buffs[index - n_icon_per_row], "BOTTOMLEFT", 0, - inter);
 				else
 					aura:SetPoint("TOPLEFT", buffs[index - 1], "TOPRIGHT", inter, 0);
@@ -1497,7 +1574,7 @@ function UF.createPartyAura(U, unit)
 			if index == 1 then
 				-- debuffs[1]:SetPoint("TOPLEFT", buffs[1], "BOTTOMLEFT", 0, - inter);
 			else
-				if fmod(index - 1, n_icon_per_row) == 0 then
+				if (index - 1) % n_icon_per_row == 0 then
 					aura:SetPoint("TOPLEFT", debuffs[index - n_icon_per_row], "BOTTOMLEFT", 0, - inter);
 				else
 					aura:SetPoint("TOPLEFT", debuffs[index - 1], "TOPRIGHT", inter, 0);
@@ -1651,7 +1728,7 @@ function UF.createTargetFrame(U, unit, targetPos, set)
 	NAME:SetFont(GameFontNormal:GetFont(), 13, "OUTLINE");
 	NAME:SetPoint("BOTTOM", T, "TOP", 0, 2);
 	T.NAME = NAME;
-	local hh = math.ceil(h * 2 / 3);
+	local hh = ceil(h * 2 / 3);
 	local hp = h - hh;
 	local HB = CreateFrame("STATUSBAR", nil, T);
 	HB:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
@@ -2203,7 +2280,7 @@ function UF.hookUnitFrame(uf, unit, portraitPos, overrideTexture, ufBgCoord, hoo
 		class.border:SetPoint("CENTER", 11, -12);
 		class.icon = class:CreateTexture(nil, "ARTWORK");
 		class.icon:SetTexture("Interface\\WorldStateFrame\\Icons-Classes");
-		class.icon:SetAllPoints(true);
+		class.icon:SetAllPoints();
 		function U:UpdateClass()
 			if UnitIsPlayer(unit) then
 				U.CLASS = select(2, UnitClass(unit));
@@ -2359,15 +2436,18 @@ function UF.presentThreat(U, ppos, point, relPoint, x, y)
 		self.timer = self.timer + elasped;
 		if self.timer >= 0.5 then
 			self.timer = self.timer - 0.5;
-			if not UnitIsDead(self.unit) and not UnitIsFriend('player', self.unit) and not UnitPlayerControlled(self.unit) then
-				local isTanking, threatStatus, threatPercent, rawThreatPercent, threatValue = ThreatLib:UnitDetailedThreatSituation('player', self.unit);
-				if rawThreatPercent then
-					self.p:SetText(format("%d%%", rawThreatPercent));
-					rawThreatPercent = rawThreatPercent * 0.01;
-					if rawThreatPercent < 0.5 then
-						self.p:SetVertexColor(rawThreatPercent * 2.0, 1.0, 0.0);
+			if UnitExists(self.unit) and not UnitIsDead(self.unit) and UnitIsEnemy('player', self.unit) and not UnitPlayerControlled(self.unit) then
+				local isTanking, threatStatus, threatPercent, rawThreatPercent, threatValue = UnitDetailedThreatSituation('player', self.unit);
+				if isTanking then
+					threatPercent = 100;
+				end
+				if threatPercent then
+					self.p:SetText(format("%d%%", threatPercent));
+					threatPercent = threatPercent * 0.01;
+					if threatPercent < 0.5 then
+						self.p:SetVertexColor(threatPercent * 2.0, 1.0, 0.0);
 					else
-						self.p:SetVertexColor(1.0, 2.0 - rawThreatPercent * 2.0, 0.0);
+						self.p:SetVertexColor(1.0, 2.0 - threatPercent * 2.0, 0.0);
 					end
 				else
 					self.p:SetText(nil);
@@ -2466,10 +2546,18 @@ local function init()
 			self:UpdateHealth();
 			self:UpdatePower();
 			local classification = UnitClassification('target');
-			if classification == "rareelite" then
-				self.BG:SetTexture(texture_rare_elite);
-			elseif self.overrideTexture == nil and self.TF and self.BG then
-				self.BG:SetTexture(self.TF:GetTexture());
+			if classification == "elite" or classification == "worldboss" then
+				SetPTexture(self, 3);
+				-- self.BG:SetTexture(texture_portrait_border[4]);
+			elseif classification == "rareelite" then
+				SetPTexture(self, 2);
+				-- self.BG:SetTexture(texture_portrait_border[3]);
+			elseif classification == "rare" then
+				SetPTexture(self, 1);
+				-- self.BG:SetTexture(texture_portrait_border[2]);
+			else	--	"normal", "trivial", or "minus"
+				SetPTexture(self, 0);
+				-- self.BG:SetTexture(texture_portrait_border[1]);
 			end
 			self:Update3DPortrait();
 		end	
@@ -2518,6 +2606,8 @@ local function init()
 			-- end);
 		end
 		UF.regUnitEvent(TOT, 'target', "UNIT_TARGET");
+
+		TOT:SetFrameLevel(TU:GetFrameLevel() + 1);
 	end
 
 	do	--	party
@@ -2548,10 +2638,17 @@ local function init()
 	-- local B4U = UF.hookUnitFrame(Boss4TargetFrame, 'boss4', "RIGHT", nil, { 0.09375, 1.0, 0.0, 0.78125, }, { true, true, true, nil, nil, false, nil, }, true, false, false);
 	-- local B5U = UF.hookUnitFrame(Boss5TargetFrame, 'boss5', "RIGHT", nil, { 0.09375, 1.0, 0.0, 0.78125, }, { true, true, true, nil, nil, false, nil, }, true, false, false);
 
-	for unit, U in pairs(UF.frames) do
+	for unit, U in next, UF.frames do
 		U:scale();
 	end
 	SetPTexture(UF.frames['player'], alaUnitFrameSV.playerTexture);
+	UF.frames['target']:PLAYER_TARGET_CHANGED();
+	SetPTexture(UF.frames['pet'], 4);
+	SetPTexture(UF.frames['targettarget'], 5);
+	SetPTexture(UF.frames['party1'], 6);
+	SetPTexture(UF.frames['party2'], 6);
+	SetPTexture(UF.frames['party3'], 6);
+	SetPTexture(UF.frames['party4'], 6);
 	if alaUnitFrameSV.castBar then
 		getCastBar(PlayerFrame, CastingBarFrame, nil, 32, 20, 160, 32, "RIGHT");
 		--getCastBar(TargetFrame, TargetFrameSpellBar, nil, 0, 32, 180, 24, "LEFT");
@@ -2569,12 +2666,13 @@ local function init()
 		UF.regEvent(UF, "ADDON_LOADED");
 	end	
 	UF.toggle_power_restoration(alaUnitFrameSV.power_restoration);
+	UF.toggle_power_restoration_full(alaUnitFrameSV.power_restoration_full);
 	UF.toggle_extra_power0(alaUnitFrameSV.extra_power0);
 	UF.toggle_partyTarget(alaUnitFrameSV.partyTarget);
 	UF.toggle_partyAura(alaUnitFrameSV.partyAura);
 	UF.toggle_ToTTarget(alaUnitFrameSV.ToTTarget);
 
-	for unit, U in pairs(UF.frames) do
+	for unit, U in next, UF.frames do
 		local configKey = U.configKey;
 		if U.class then
 			if getConfig(configKey, "class") then
@@ -2630,6 +2728,7 @@ local function init()
 
 	SetCVar("statusTextDisplay", "NONE");
 	SetCVar("statusText", "0");
+	if __ala_meta__.initpublic then __ala_meta__.initpublic(); end
 end
 
 do
@@ -2747,10 +2846,10 @@ do
 		alaUnitFrameSV[key] = value;
 		drop.fontString:SetText(desc);
 		if key == 'which' then
-			for _, cb in pairs(configFrame.subCheckBox) do
+			for _, cb in next, configFrame.subCheckBox do
 				cb:SetChecked(alaUnitFrameSV[value][cb.key] ~= false);
 			end
-			for _, s in pairs(configFrame.subSlider) do
+			for _, s in next, configFrame.subSlider do
 				sliderRefresh(s);
 			end
 		elseif key == 'playerTexture' then
@@ -2783,7 +2882,7 @@ do
 			handler = dropOnClick, 
 			elements = { }, 
 		};
-		for _, v in pairs(data) do
+		for _, v in next, data do
 			tinsert(db.elements, {
 				para = { drop, key, v[1], v[2], };
 				text = v[2];
@@ -2813,6 +2912,16 @@ do
 					ResetPPos();
 					ResetTPos();
 				end
+			elseif key == "dark" then
+				alaUnitFrameSV[key] = on;
+				SetPTexture(UF.frames['player'], alaUnitFrameSV.playerTexture);
+				UF.frames['target']:PLAYER_TARGET_CHANGED();
+				SetPTexture(UF.frames['pet'], 4);
+				SetPTexture(UF.frames['targettarget'], 5);
+				SetPTexture(UF.frames['party1'], 6);
+				SetPTexture(UF.frames['party2'], 6);
+				SetPTexture(UF.frames['party3'], 6);
+				SetPTexture(UF.frames['party4'], 6);
 			elseif key == "castBar" then
 				alaUnitFrameSV[key] = on;
 				if on then
@@ -2828,6 +2937,9 @@ do
 			elseif key == "power_restoration" then
 				alaUnitFrameSV[key] = on;
 				UF.toggle_power_restoration(on);
+			elseif key == "power_restoration_full" then
+				alaUnitFrameSV[key] = on;
+				UF.toggle_power_restoration_full(on);
 			elseif key == "extra_power0" then
 				alaUnitFrameSV[key] = on;
 				UF.toggle_extra_power0(on);
@@ -2962,7 +3074,7 @@ do
 			if not alaUnitFrameSV._ver or (alaUnitFrameSV._ver < 191008.1) then
 				local orig = alaUnitFrameSV;
 				alaUnitFrameSV = defConfig;
-				for _, k in pairs({ 'class', 'pVal', 'pPer', 'hVal', 'hPer', 'HBColor', }) do
+				for _, k in next, { 'class', 'pVal', 'pPer', 'hVal', 'hPer', 'HBColor', } do
 					alaUnitFrameSV.general[k] = orig[k];
 				end
 			elseif alaUnitFrameSV._ver < 200408.0 then
@@ -2971,12 +3083,12 @@ do
 				alaUnitFrameSV.configKeys = {  };
 				alaUnitFrameSV.feedback = nil;
 			else
-				for k, v in pairs(defConfig) do
+				for k, v in next, defConfig do
 					if alaUnitFrameSV[k] == nil then
 						alaUnitFrameSV[k] = v;
 					end
 				end
-				for k, v in pairs(defConfig.general) do
+				for k, v in next, defConfig.general do
 					if alaUnitFrameSV.general[k] == nil then
 						alaUnitFrameSV.general[k] = v;
 					end
@@ -2997,7 +3109,8 @@ do
 		CreateValueBox(false, "tRelX", L["x_offset_of_TargetFrame"], 1, 3);
 		CreateValueBox(false, "tRelY", L["y_offset_of_TargetFrame"], 2, 3);
 
-		CreateDrop(false, "playerTexture", L["playerTexture"], 1, 4, {
+		CreateCheckBox(false, "dark", L["dark_portraid_texture"], 1, 4);
+		CreateDrop(false, "playerTexture", L["playerTexture"], 2, 4, {
 			{ 0, L["playerTexture_0"], },
 			{ 1, L["playerTexture_1"], },
 			{ 2, L["playerTexture_2"], },
@@ -3006,14 +3119,15 @@ do
 		CreateCheckBox(false, "castBar", L["move_castbar_to_top_of_portrait"], 1, 5);
 
 		CreateCheckBox(false, "power_restoration", L["mana_and_energy_regen_indicator"], 1, 6);
-		CreateCheckBox(false, "extra_power0", L["mana_for_druid"], 2, 6);
-		CreateCheckBox(false, "partyTarget", L["target_of_party_member"], 1, 7);
-		CreateCheckBox(false, "partyAura", L["party_aura"], 2, 7);
+		CreateCheckBox(false, "power_restoration_full", L["mana_and_energy_regen_indicator_full"], 2, 6);
+		CreateCheckBox(false, "extra_power0", L["mana_for_druid"], 1, 7);
+		CreateCheckBox(false, "partyTarget", L["target_of_party_member"], 1, 8);
+		CreateCheckBox(false, "partyAura", L["party_aura"], 2, 8);
 
-		CreateCheckBox(false, "ToTTarget", L["ToTTarget"], 1, 8);
-		-- CreateCheckBox(false, "feedback_on", "feedback_on", 1, 9);
+		CreateCheckBox(false, "ToTTarget", L["ToTTarget"], 1, 9);
+		-- CreateCheckBox(false, "feedback_on", "feedback_on", 1, 10);
 
-		local sub_menu_start = 10;
+		local sub_menu_start = 11;
 		CreateDrop(false, "which", L["which_frame"], 1, sub_menu_start, {
 			{ 'general', L["General"], },
 			{ 'player', L["PlayerFrame"], },
