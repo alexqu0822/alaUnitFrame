@@ -3,8 +3,10 @@
 
     <Include file="libs\libs.xml"/>
 
+    <script file="init.lua"/>
     <script file="locale.lua"/>
-    <script file="alaUnitFrame.lua"/>
+    <script file="settings.lua"/>
+    <script file="main.lua"/>
 
 </Ui>
 

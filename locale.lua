@@ -1,14 +1,24 @@
 ﻿--[[--
-	alex/ALA @ 163UI
-	http://wowui.w.163.com/163ui/
+	LOCALE
 --]]--
 ----------------------------------------------------------------------------------------------------
-local ADDON, NS = ...;
 
-local L = setmetatable({  }, { __newindex = function(t, k, v) rawset(t, k, (v == true) and k or v); end});
-local LOCALE = GetLocale();
+local __addon, __private = ...;
+local MT = __private.MT;
+local CT = __private.CT;
+local VT = __private.VT;
+local DT = __private.DT;
 
-if LOCALE == 'zhCN' or LOCALE == 'zhTW' then
+if VT.UnsupportedClient then
+	return;
+end
+
+CT.LOCALE = GetLocale();
+CT.L = setmetatable({  }, { __newindex = function(t, k, v) rawset(t, k, (v == true) and k or v); end});
+
+local L = CT.L;
+
+if CT.LOCALE == 'zhCN' or CT.LOCALE == 'zhTW' then
 	L["user_placed"] = "移动位置";
 	L["x_offset_of_PlayerFrame"] = "玩家头像横向位移";
 	L["y_offset_of_PlayerFrame"] = "玩家头像纵向位移";
@@ -31,7 +41,7 @@ if LOCALE == 'zhCN' or LOCALE == 'zhTW' then
 	L["target_is_retail_style"] = "使用正式服有爱头像风格的目标";
 	L["party_aura"] = "小队成员BUFF和DEBUFF";
 	L["party_cast"] = "小队成员的施法条";
-	L["ShiftFocus"] = "Shift+左键点击设置焦点(需要重载)";
+	L["ShiftFocus"] = "Shift+左键点击设置焦点";
 
 	L["which_frame"] = "设置哪个框架";
 	L["General"] = "全局设置";
@@ -43,14 +53,14 @@ if LOCALE == 'zhCN' or LOCALE == 'zhTW' then
 	L["BOSS"] = "BOSS";
 
 	L["class_icon"] = "显示职业";
-	L["portrait3D"] = "使用3D头像";
+	L["Portrait3D"] = "使用3D头像";
 	L["health_text"] = "显示生命值";
 	L["health_percent"] = "显示生命值百分比";
 	L["power_text"] = "显示能量值";
 	L["power_percent"] = "显示能量值百分比";
 	L["color_health_bar_by_health_percent"] = "生命条按比例染色";
-	L["text_alpha"] = "数值透明度";
-	L["scale"] = "缩放";
+	L["BarTextAlpha"] = "数值透明度";
+	L["Scale"] = "缩放";
 else
 	L["user_placed"] = "Move player & target frame.";
 	L["x_offset_of_PlayerFrame"] = "x offset of PlayerFrame";
@@ -74,7 +84,7 @@ else
 	L["target_is_retail_style"] = "Targets use 163 retail style";
 	L["party_aura"] = "Buffs & debuffs of party member";
 	L["party_cast"] = "Casting bar of party member";
-	L["ShiftFocus"] = "Set focus by pressing shift and left click\n(Reload is needed)";
+	L["ShiftFocus"] = "Set focus by pressing shift and left click";
 
 	L["which_frame"] = "Which Frame";
 	L["General"] = "General";
@@ -86,14 +96,12 @@ else
 	L["BOSS"] = "BOSS";
 
 	L["class_icon"] = "Show class icon";
-	L["portrait3D"] = "portrait3D";
+	L["Portrait3D"] = "Portrait3D";
 	L["health_text"] = "Show health text";
 	L["health_percent"] = "Show percent of health";
 	L["power_text"] = "Show power text";
 	L["power_percent"] = "Show percent of power";
 	L["color_health_bar_by_health_percent"] = "Color health bar by health percent";
-	L["text_alpha"] = "Alpha of text";
-	L["scale"] = "Scale";
+	L["BarTextAlpha"] = "Alpha of text";
+	L["Scale"] = "Scale";
 end
-
-NS.L = L;
