@@ -107,15 +107,7 @@ local _VirtualWidget = {
 
 
 function MT.GetConfig(configKey, key)
-	-- if configKey and VT.DB[configKey] then
-	-- 	if (VT.DB[configKey][key] == nil) then
-	-- 		return VT.DB.general[key];
-	-- 	end
-	if configKey then
-		return VT.DB[configKey][key];
-	else
-		return VT.DB.general[key];
-	end
+	return VT.DB[configKey or "general"][key];
 end
 function MT.BuildConfig(configKey)
 	VT.DB[configKey] = VT.DB[configKey] or {  };
@@ -126,8 +118,8 @@ function MT.BuildConfig(configKey)
 	end
 end
 function MT.SetConfigValue(configKey, key, v)
+	VT.DB[configKey][key] = v;
 	if configKey == 'general' then
-		VT.DB.general[key] = v;
 		for unit, CoverFrame in next, MT.CoverFrames do
 			VT.DB[CoverFrame.configKey][key] = v;
 			if CoverFrame[key] then
@@ -144,7 +136,6 @@ function MT.SetConfigValue(configKey, key, v)
 			end
 		end
 	else
-		VT.DB[configKey][key] = v;
 		local CoverFrame = MT.CoverFrames[configKey];
 		if CoverFrame and CoverFrame[key] then
 			if v then
@@ -154,27 +145,25 @@ function MT.SetConfigValue(configKey, key, v)
 			end
 		else
 			for unit, CoverFrame in next, MT.CoverFrames do
-				if CoverFrame.configKey == configKey then
-					if CoverFrame[key] then
-						if v then
-							CoverFrame[key](CoverFrame, v);
-						else
-							CoverFrame[key](CoverFrame, v);
-						end
-						CoverFrame:UpdateHealth();
-						CoverFrame:UpdatePower();
-						CoverFrame:UpdatePowerType();
-						CoverFrame:Update3DPortrait();
-						CoverFrame:UpdateClass();
+				if CoverFrame.configKey == configKey and CoverFrame[key] then
+					if v then
+						CoverFrame[key](CoverFrame, v);
+					else
+						CoverFrame[key](CoverFrame, v);
 					end
+					CoverFrame:UpdateHealth();
+					CoverFrame:UpdatePower();
+					CoverFrame:UpdatePowerType();
+					CoverFrame:Update3DPortrait();
+					CoverFrame:UpdateClass();
 				end
 			end
 		end
 	end
 end
 function MT.SetConfigBoolean(configKey, key, v)
+	VT.DB[configKey][key] = v;
 	if configKey == 'general' then
-		VT.DB.general[key] = v;
 		for unit, CoverFrame in next, MT.CoverFrames do
 			VT.DB[CoverFrame.configKey][key] = v;
 			if CoverFrame[key] then
@@ -191,7 +180,6 @@ function MT.SetConfigBoolean(configKey, key, v)
 			end
 		end
 	else
-		VT.DB[configKey][key] = v;
 		local CoverFrame = MT.CoverFrames[configKey];
 		if CoverFrame and CoverFrame[key] then
 			if v then
@@ -201,19 +189,17 @@ function MT.SetConfigBoolean(configKey, key, v)
 			end
 		else
 			for unit, CoverFrame in next, MT.CoverFrames do
-				if CoverFrame.configKey == configKey then
-					if CoverFrame[key] then
-						if v then
-							CoverFrame[key]:Show();
-						else
-							CoverFrame[key]:Hide();
-						end
-						CoverFrame:UpdateHealth();
-						CoverFrame:UpdatePower();
-						CoverFrame:UpdatePowerType();
-						CoverFrame:Update3DPortrait();
-						CoverFrame:UpdateClass();
+				if CoverFrame.configKey == configKey and CoverFrame[key] then
+					if v then
+						CoverFrame[key]:Show();
+					else
+						CoverFrame[key]:Hide();
 					end
+					CoverFrame:UpdateHealth();
+					CoverFrame:UpdatePower();
+					CoverFrame:UpdatePowerType();
+					CoverFrame:Update3DPortrait();
+					CoverFrame:UpdateClass();
 				end
 			end
 		end
@@ -245,8 +231,8 @@ end
 function MT.AttachClassicCastBar(UniFrame, castBar, hPos, vOfs, hOfs, width, height, iconPos)
 	if VT.DB.castBar then
 	-- if IsAddOnLoaded("ClassicCastbars") then
-		VT.DB.ClassicCastbarsDB = VT.DB.ClassicCastbarsDB or ClassicCastbarsDB["target"];
 		_G.ClassicCastbarsDB = _G.ClassicCastbarsDB or {  };
+		VT.DB.ClassicCastbarsDB = VT.DB.ClassicCastbarsDB or _G.ClassicCastbarsDB["target"];
 		_G.ClassicCastbarsDB["target"] = {
 			["castFontSize"] = 15,
 			["autoPosition"] = false,
@@ -458,7 +444,7 @@ function MT.CreateExtraPower0(CoverFrame, unit, PortraitPosition)
 				end
 			end);
 			if CoverFrame.LEVEL < 10 then
-				extra_power_restoration_spark:SetAlpha(0.0);
+				-- extra_power_restoration_spark:SetAlpha(0.0);
 			end
 		end
 		function extra_power0:UpdatePower()
