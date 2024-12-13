@@ -23,21 +23,27 @@ local DT = {  }; __private.DT = DT;		--	data
 		VT.UnsupportedClient = true;
 		return;
 	end
+	if select(4, GetBuildInfo()) >= 20000 then
+		MT.UnitAura = UnitAura;
+	else
+		local LibClassicDurations = LibStub("LibClassicDurations");
+		if LibClassicDurations then
+			LibClassicDurations:Register(__addon);
+			function MT.UnitAura(unit, index, filter)
+				return LibClassicDurations:UnitAura(unit, index, filter);
+			end
+		else
+			function MT.UnitAura(unit, index, filter)
+				return nil;
+			end
+		end
+	end
+
 -->
 	MT.CoverFrames = {  };
 	MT.UnitFrames = {  };
 	MT.CodeAfterCombat = {  };
 -->
-
-if select(4, GetBuildInfo()) >= 20000 then
-	MT.UnitAura = UnitAura;
-else
-	local LibClassicDurations = LibStub("LibClassicDurations");
-	LibClassicDurations:Register(__addon);
-	function MT.UnitAura(unit, index, filter)
-		return LibClassicDurations:UnitAura(unit, index, filter);
-	end
-end
 
 local function EventDispatcher(self, event, ...)
 	if self[event] then
@@ -62,7 +68,7 @@ function Driver.ADDON_LOADED(self, event, addon)
 				local v = alaUnitFrameSV[k];
 				if v and type(v) == 'table' then
 					v.Class = v.class;
-					v.Portrait3D = false;
+					v.Portrait3D = not VT.IsVanilla;
 					v.HBarValue = v.hVal;
 					v.PBarValue = v.pVal;
 					v.HBarPercentage = v.hPer;
@@ -92,8 +98,8 @@ function Driver.PLAYER_ENTERING_WORLD(self, event)
 
 end
 function Driver.PLAYER_REGEN_ENABLED(self, event)
-	while Driver.on_next_regen[1] do
-		tremove(Driver.on_next_regen, 1)(Driver);
+	while MT.CodeAfterCombat[1] do
+		tremove(MT.CodeAfterCombat, 1)();
 	end
 end
 
