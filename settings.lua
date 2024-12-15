@@ -235,11 +235,11 @@ local function CheckButtonOnClick(self)
 		if key == "playerPlaced" then
 			VT.DB[key] = on;
 			if on then
-				MT.SetPlayerFramePosition();
-				MT.SetTargetFramePosition();
+				MT.RunAfterCombat(MT._Secure_SetPlayerFramePosition);
+				MT.RunAfterCombat(MT._Secure_SetTargetFramePosition);
 			else
-				MT.ResetPlayerFramePosition();
-				MT.ResetTargetFramePosition();
+				MT.RunAfterCombat(MT._Secure_ResetPlayerFramePosition);
+				MT.RunAfterCombat(MT._Secure_ResetTargetFramePosition);
 			end
 		elseif key == "dark" then
 			VT.DB[key] = on;
@@ -276,7 +276,7 @@ local function CheckButtonOnClick(self)
 			MT.ToggleExtraPower0();
 		elseif key == "partyTarget" then
 			VT.DB[key] = on;
-			MT.TogglePartyTargetingFrame();
+			MT.RunAfterCombat(MT._Secure_TogglePartyTargetingFrame);
 		elseif key == "TargetRetailStyle" then
 			VT.DB[key] = on;
 			MT.TogglePartyTargetingFrameStyle();
@@ -290,10 +290,10 @@ local function CheckButtonOnClick(self)
 			end
 		elseif key == "ToTTarget" then
 			VT.DB[key] = on;
-			MT.ToggleToTTarget();
+			MT.RunAfterCombat(MT._Secure_ToggleToTTarget);
 		elseif key == "ShiftFocus" then
 			VT.DB[key] = on;
-			MT.ToggleShiftFocus();
+			MT.RunAfterCombat(MT._Secure_ToggleShiftFocus);
 		else
 			MT.SetConfigBoolean(VT.DB.which or 'general', key, on);
 		end
@@ -336,8 +336,8 @@ local function ValueBoxOnEnterPressed(self)
 	if key and VT.DB[key] then
 		local value = tonumber(self:GetText()) or 0.0;
 		VT.DB[key] = value;
-		MT.SetPlayerFramePosition();
-		MT.SetTargetFramePosition();
+		MT.RunAfterCombat(MT._Secure_SetPlayerFramePosition);
+		MT.RunAfterCombat(MT._Secure_SetTargetFramePosition);
 	end
 	self:ClearFocus();
 end

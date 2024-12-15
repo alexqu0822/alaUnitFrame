@@ -10,14 +10,16 @@ local VT = {  }; __private.VT = VT;		--	variables
 local DT = {  }; __private.DT = DT;		--	data
 
 -->
-	local select = select;
-	local tinsert, tremove = table.insert, table.remove;
-
 	VT.IsCata = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC;		--	14
 	VT.IsWrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC;			--	11
 	VT.IsTBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC;	--	5
 	VT.IsVanilla = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC;				--	2
 	VT.IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE;				--	1
+	MT.Print = print;
+
+	local select = select;
+	local tinsert, tremove = table.insert, table.remove;
+	local InCombatLockdown = InCombatLockdown;
 
 	if not VT.IsCata and not VT.IsWrath and not VT.IsTBC and not VT.IsVanilla then
 		VT.UnsupportedClient = true;
@@ -43,6 +45,7 @@ local DT = {  }; __private.DT = DT;		--	data
 	MT.CoverFrames = {  };
 	MT.UnitFrames = {  };
 	MT.CodeAfterCombat = {  };
+
 -->
 
 local function EventDispatcher(self, event, ...)
@@ -113,7 +116,11 @@ function MT.RegisterEvent(event, callback)
 	return Driver:RegisterEvent(event);
 end
 function MT.RunAfterCombat(func)
-	tinsert(MT.CodeAfterCombat, func);
+	if InCombatLockdown() then
+		tinsert(MT.CodeAfterCombat, func);
+	else
+		return func();
+	end
 end
 
 function MT.FrameRegisterEvent(F, ...)

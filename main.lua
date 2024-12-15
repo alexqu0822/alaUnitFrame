@@ -291,7 +291,7 @@ function MT.AttachClassicCastBar(UniFrame, castBar, hPos, vOfs, hOfs, width, hei
 	end
 	-- end
 end
-function MT.ResetClassicCastBar(castBar)
+function MT.ResetClassicCastBar()
 	if not VT.DB.castBar then
 		if VT.DB.ClassicCastbarsDB and ClassicCastbarsDB then
 			ClassicCastbarsDB["target"] = VT.DB.ClassicCastbarsDB;
@@ -299,78 +299,78 @@ function MT.ResetClassicCastBar(castBar)
 		end
 	end
 end
-function MT.AttachCastBar(UniFrame, castBar, hPos, vOfs, hOfs, width, height, iconPos)
-	local name = castBar:GetName();
+function MT.AttachCastBar(UniFrame, CastBar, hPos, vOfs, hOfs, width, height, iconPos)
+	local name = CastBar:GetName();
 	if not VT.DB[name] then
 		VT.DB[name] = {  };
-		VT.DB[name].size = { castBar:GetSize() };
-		VT.DB[name].pos = { castBar:GetPoint() };
+		VT.DB[name].size = { CastBar:GetSize() };
+		VT.DB[name].pos = { CastBar:GetPoint() };
 		for i = 1, #VT.DB[name].pos do
 			if type(VT.DB[name][i]) == 'table' then
 				VT.DB[name][i] = VT.DB[name][i]:GetName();
 			end
 		end
 	end
-	castBar:SetSize(width, height);
-	castBar.Icon:SetSize(height, height);
-	castBar.Icon:ClearAllPoints();
+	CastBar:SetSize(width, height);
+	CastBar.Icon:SetSize(height, height);
+	CastBar.Icon:ClearAllPoints();
 	if iconPos == "LEFT" then
-		castBar.Icon:SetPoint("RIGHT", castBar, "LEFT", -4, 0);
+		CastBar.Icon:SetPoint("RIGHT", CastBar, "LEFT", -4, 0);
 	elseif iconPos== "RIGHT" then
-		castBar.Icon:SetPoint("LEFT", castBar, "RIGHT", 4, 0);
+		CastBar.Icon:SetPoint("LEFT", CastBar, "RIGHT", 4, 0);
 	end
-	castBar.Icon:Show();
+	CastBar.Icon:Show();
 
-	-- castBar.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small");
-	-- castBar.Border:SetSize(0, 49);
-	-- castBar.Border:ClearAllPoints();
-	-- castBar.Border:SetPoint("TOPLEFT", -23, 20);
-	-- castBar.Border:SetPoint("TOPRIGHT", 23, 20);
-	castBar.Border:Hide();
-	castBar.BorderShield:SetSize(0, 49);
-	castBar.BorderShield:ClearAllPoints();
-	castBar.BorderShield:SetPoint("TOPLEFT", -28, 20);
-	castBar.BorderShield:SetPoint("TOPRIGHT", 18, 20);
+	-- CastBar.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small");
+	-- CastBar.Border:SetSize(0, 49);
+	-- CastBar.Border:ClearAllPoints();
+	-- CastBar.Border:SetPoint("TOPLEFT", -23, 20);
+	-- CastBar.Border:SetPoint("TOPRIGHT", 23, 20);
+	CastBar.Border:Hide();
+	CastBar.BorderShield:SetSize(0, 49);
+	CastBar.BorderShield:ClearAllPoints();
+	CastBar.BorderShield:SetPoint("TOPLEFT", -28, 20);
+	CastBar.BorderShield:SetPoint("TOPRIGHT", 18, 20);
 
-	castBar.Text:SetSize(0, 24);
-	castBar.Text:ClearAllPoints();
-	--castBar.Text:SetPoint("TOPLEFT", 0, 4);
-	--castBar.Text:SetPoint("TOPRIGHT", 0, 4);
-	castBar.Text:SetPoint("CENTER");
+	CastBar.Text:SetSize(0, 24);
+	CastBar.Text:ClearAllPoints();
+	--CastBar.Text:SetPoint("TOPLEFT", 0, 4);
+	--CastBar.Text:SetPoint("TOPRIGHT", 0, 4);
+	CastBar.Text:SetPoint("CENTER");
 
-	-- castBar.Flash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small");
-	-- castBar.Flash:SetSize(0, 49);
-	-- castBar.Flash:ClearAllPoints();
-	-- castBar.Flash:SetPoint("TOPLEFT", -23, 20);
-	-- castBar.Flash:SetPoint("TOPRIGHT", 23, 20);
-	castBar.Flash._Show = castBar.Flash.Show;
-	castBar.Flash.Show = function()end;
-	castBar.Flash:Hide();
-	castBar._ClearAllPoints = castBar.ClearAllPoints;
-	castBar.ClearAllPoints = function()end;
-	castBar._SetPoint = castBar.SetPoint
-	castBar.SetPoint = function()end;
-	castBar:_ClearAllPoints();
-	-- castBar.Spark:SetTexCoord(0.0, 1.0, 11 / 32, 20 / 32);
+	-- CastBar.Flash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small");
+	-- CastBar.Flash:SetSize(0, 49);
+	-- CastBar.Flash:ClearAllPoints();
+	-- CastBar.Flash:SetPoint("TOPLEFT", -23, 20);
+	-- CastBar.Flash:SetPoint("TOPRIGHT", 23, 20);
+	CastBar.Flash._Show = CastBar.Flash.Show;
+	CastBar.Flash.Show = function()end;
+	CastBar.Flash:Hide();
+	CastBar._ClearAllPoints = CastBar.ClearAllPoints;
+	CastBar.ClearAllPoints = function()end;
+	CastBar._SetPoint = CastBar.SetPoint
+	CastBar.SetPoint = function()end;
+	CastBar:_ClearAllPoints();
+	-- CastBar.Spark:SetTexCoord(0.0, 1.0, 11 / 32, 20 / 32);
 	-- if hPos == "TOP" then
-		castBar:_SetPoint("BOTTOM", UniFrame, "TOP", vOfs, hOfs);
-		--castBar:_SetPoint("BOTTOMRIGHT", UniFrame, "TOPRIGHT", 0, hOfs);
+		CastBar:_SetPoint("BOTTOM", UniFrame, "TOP", vOfs, hOfs);
+		--CastBar:_SetPoint("BOTTOMRIGHT", UniFrame, "TOPRIGHT", 0, hOfs);
 	-- elseif hPos == "DOWN" then
-	-- 	castBar:_SetPoint("TOPLEFT", UniFrame, "BOTTOMLEFT", 0, -hOfs);
-	-- 	castBar:_SetPoint("TOPRIGHT", UniFrame, "BOTTOMRIGHT", 0, -hOfs);
+	-- 	CastBar:_SetPoint("TOPLEFT", UniFrame, "BOTTOMLEFT", 0, -hOfs);
+	-- 	CastBar:_SetPoint("TOPRIGHT", UniFrame, "BOTTOMRIGHT", 0, -hOfs);
 	-- end
 end
-function MT.ResetCastBar(castBar)
-	local name = castBar:GetName();
+function MT.ResetCastBar(CastBar)
+	local name = CastBar:GetName();
 	if VT.DB[name] and type(VT.DB[name]) == 'table' then
 		local size = VT.DB[name].size;
 		if size and type(size) == 'table' then
-			castBar:SetSize(size[1], size[2]);
+			CastBar:SetSize(size[1], size[2]);
 		end
 		local pos = VT.DB[name].pos;
 		if pos and type(pos) == 'table' then
-			castBar:ClearAllPoints();
-			castBar:SetPoint(pos[1], pos[2], pos[3], pos[4], pos[5]);
+			CastBar:ClearAllPoints();
+			CastBar:SetPoint(pos[1], pos[2], pos[3], pos[4], pos[5]);
 		end
 	end
 end
@@ -427,19 +427,19 @@ function MT.CreateExtraPower0(CoverFrame, unit, PortraitPosition)
 			extra_power_restoration_delay5_spark:SetWidth(15);
 			extra_power_restoration_delay5_spark:SetBlendMode("ADD");
 			extra_power_restoration_delay5_spark:Hide();
-				extra_power0:SetScript("OnUpdate", function(self)
+			extra_power0:SetScript("OnUpdate", function(self)
 				if extra_power_restoration_spark:IsShown() then
-					local TIME = GetTime();
+					local now = GetTime();
 					if CoverFrame.power_restoration_wait_timer then
 						extra_power_restoration_delay5_spark:Show();
 						extra_power_restoration_delay5_spark:ClearAllPoints();
-						extra_power_restoration_delay5_spark:SetPoint("CENTER", extra_power0, "LEFT", self:GetWidth() * (CoverFrame.power_restoration_wait_timer - TIME) / 5.0, 0);
+						extra_power_restoration_delay5_spark:SetPoint("CENTER", self, "LEFT", self:GetWidth() * (CoverFrame.power_restoration_wait_timer - now) / 5.0, 0);
 					else
 						extra_power_restoration_delay5_spark:Hide();
 					end
 					if CoverFrame.power_restoration_time_timer then
 						extra_power_restoration_spark:ClearAllPoints();
-						extra_power_restoration_spark:SetPoint("CENTER", extra_power0, "RIGHT", - self:GetWidth() * (CoverFrame.power_restoration_time_timer - TIME) / CoverFrame.power_restoration_time, 0);
+						extra_power_restoration_spark:SetPoint("CENTER", self, "RIGHT", - self:GetWidth() * (CoverFrame.power_restoration_time_timer - now) / CoverFrame.power_restoration_time, 0);
 					end
 				end
 			end);
@@ -477,45 +477,45 @@ function MT.CreateExtraPower0(CoverFrame, unit, PortraitPosition)
 			end
 		end
 		function extra_power0:UpdatePowerMax()
-			self:UpdatePower();
+			return self:UpdatePower();
 		end
-		function extra_power0.UPDATE_SHAPESHIFT_FORM(self, event)
+		function extra_power0:UPDATE_SHAPESHIFT_FORM(event)
 			local powerType, powerToken = UnitPowerType(unit);
 			if powerType == 0 then
-				extra_power0:Hide();
+				self:Hide();
 			elseif VT.DB.extra_power0 then
-				extra_power0:Show();
-				extra_power0:UpdatePowerMax();
+				self:Show();
+				return self:UpdatePowerMax();
 			end
 		end
-		function extra_power0.UNIT_DISPLAYPOWER(self, event, unitId)
+		function extra_power0:UNIT_DISPLAYPOWER(event, unitId)
 			local powerType, powerToken = UnitPowerType(unit);
 			if powerType == 0 then
-				extra_power0:Hide();
+				self:Hide();
 			elseif VT.DB.extra_power0 then
-				extra_power0:Show();
-				extra_power0:UpdatePowerMax();
+				self:Show();
+				return self:UpdatePowerMax();
 			end
 		end
-		function extra_power0.UNIT_MAXPOWER(self, event, unitId, powerToken)
+		function extra_power0:UNIT_MAXPOWER(event, unitId, powerToken)
 			if powerToken == 'MANA' then
 				self:SetMinMaxValues(0, UnitPowerMax(unit, 0));
-				self:UpdatePower();
+				return self:UpdatePower();
 			end
 		end
-		function extra_power0.UNIT_POWER_UPDATE(self, event, unitId, powerToken)
+		function extra_power0:UNIT_POWER_UPDATE(event, unitId, powerToken)
 			if powerToken == 'MANA' then
-				self:UpdatePower();
+				return self:UpdatePower();
 			end
 		end
-		function extra_power0.UNIT_POWER_FREQUENT(self, event, unitId, powerToken)
+		function extra_power0:UNIT_POWER_FREQUENT(event, unitId, powerToken)
 			if powerToken == 'MANA' then
-				self:UpdatePower();
+				return self:UpdatePower();
 			end
 		end
 		MT.FrameRegisterEvent(extra_power0, "UPDATE_SHAPESHIFT_FORM");
 		MT.FrameRegisterUnitEvent(extra_power0, unit, "UNIT_DISPLAYPOWER", "UNIT_MAXPOWER", "UNIT_POWER_UPDATE", "UNIT_POWER_FREQUENT");
-		extra_power0.UPDATE_SHAPESHIFT_FORM(extra_power0, "UPDATE_SHAPESHIFT_FORM");
+		extra_power0:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
 		CoverFrame.extra_power0 = extra_power0;
 		CoverFrame.extra_power_restoration_spark = extra_power_restoration_spark;
 		CoverFrame.extra_power_restoration_delay5_spark = extra_power_restoration_delay5_spark;
@@ -530,7 +530,7 @@ function MT.ToggleExtraPower0()
 		return;
 	end
 	if VT.DB.extra_power0 then
-		CoverFrame.extra_power0:UPDATE_SHAPESHIFT_FORM(CoverFrame.extra_power0, "UPDATE_SHAPESHIFT_FORM");
+		CoverFrame.extra_power0:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
 	else
 		CoverFrame.extra_power0:Hide();
 	end
@@ -1057,23 +1057,23 @@ function MT.CreatePowerRestoration(CoverFrame, unit)	-- TODO timer for different
 	power_restoration_delay5_spark:Hide();
 	local update_timer = GetTime() + POWER_RESTORATION_UPDATE_INTERVAL;
 	CoverFrame:HookScript("OnUpdate", function(self)
-		local TIME = GetTime();
-		if TIME < update_timer then
+		local now = GetTime();
+		if now < update_timer then
 			return;
 		end
-		update_timer = TIME + POWER_RESTORATION_UPDATE_INTERVAL;
+		update_timer = now + POWER_RESTORATION_UPDATE_INTERVAL;
 		if self.power_restoration_wait_timer then
-			if TIME >= self.power_restoration_wait_timer then
+			if now >= self.power_restoration_wait_timer then
 				self.power_restoration_wait_timer = nil;
 			end
 		end
-		if TIME >= self.power_restoration_time_timer then
+		if now >= self.power_restoration_time_timer then
 			self.power_restoration_time_timer = self.power_restoration_time_timer + self.power_restoration_time;
 		end
 		if power_restoration_delay5_spark:IsShown() then
 			if self.powerType == 0 and self.power_restoration_wait_timer then
 				power_restoration_delay5_spark:ClearAllPoints();
-				power_restoration_delay5_spark:SetPoint("CENTER", CoverFrame._PBar, "LEFT", CoverFrame._PBar:GetWidth() * (self.power_restoration_wait_timer - TIME) / power0_restoration_wait, 0);
+				power_restoration_delay5_spark:SetPoint("CENTER", self._PBar, "LEFT", self._PBar:GetWidth() * (self.power_restoration_wait_timer - now) / power0_restoration_wait, 0);
 			else
 				power_restoration_delay5_spark:Hide();
 			end
@@ -1081,14 +1081,14 @@ function MT.CreatePowerRestoration(CoverFrame, unit)	-- TODO timer for different
 		if power_restoration_spark:IsShown() then
 			--[[if self.powerType == 0 and self.power_restoration_wait_timer then
 				power_restoration_spark:ClearAllPoints();
-				power_restoration_spark:SetPoint("CENTER", CoverFrame._PBar, "LEFT", CoverFrame._PBar:GetWidth() * (self.power_restoration_wait_timer - TIME) / power0_restoration_wait, 0);
+				power_restoration_spark:SetPoint("CENTER", self._PBar, "LEFT", self._PBar:GetWidth() * (self.power_restoration_wait_timer - now) / power0_restoration_wait, 0);
 			else]]if self.power_restoration_time_timer then
 				power_restoration_spark:ClearAllPoints();
-				power_restoration_spark:SetPoint("CENTER", CoverFrame._PBar, "RIGHT", - CoverFrame._PBar:GetWidth() * (self.power_restoration_time_timer - TIME) / self.power_restoration_time, 0);
+				power_restoration_spark:SetPoint("CENTER", self._PBar, "RIGHT", - self._PBar:GetWidth() * (self.power_restoration_time_timer - now) / self.power_restoration_time, 0);
 			end
 		end
 	end);
-	function CoverFrame.UPDATE_SHAPESHIFT_FORM(self, event)
+	function CoverFrame:UPDATE_SHAPESHIFT_FORM(event)
 		-- UnitPowerType(unit)
 		-- _1	     0,      1,       2,        3,
 		-- _2	'MANA', 'RAGE', 'FOCUS', 'ENERGY',
@@ -1124,7 +1124,7 @@ function MT.CreatePowerRestoration(CoverFrame, unit)	-- TODO timer for different
 			power_restoration_delay5_spark:Hide();
 		end
 	end
-	function CoverFrame.UNIT_SPELLCAST_SUCCEEDED(self, event, unitId, ...)
+	function CoverFrame:UNIT_SPELLCAST_SUCCEEDED(event, unitId, ...)
 		local curPower0 = UnitPower(unit, 0);
 		if curPower0 < curPowers[0] then
 			self.power_restoration_wait_timer = GetTime() + power0_restoration_wait;
@@ -1140,7 +1140,7 @@ function MT.CreatePowerRestoration(CoverFrame, unit)	-- TODO timer for different
 		end
 		curPowers[3] = curPower3;
 	end
-	function CoverFrame.UNIT_MAXPOWER(self, event, unitId, powerToken)
+	function CoverFrame:UNIT_MAXPOWER(event, unitId, powerToken)
 		local powerType = powerToken == 'MANA' and 0 or powerToken == 'ENERGY' and 3;
 		if not powerType then
 			return;
@@ -1157,7 +1157,7 @@ function MT.CreatePowerRestoration(CoverFrame, unit)	-- TODO timer for different
 			After(GetTickTime(), function() curPowers[powerType] = UnitPower(unit, powerType); end);
 		end
 	end	
-	function CoverFrame.UNIT_POWER_FREQUENT(self, event, unitId, powerToken)
+	function CoverFrame:UNIT_POWER_FREQUENT(event, unitId, powerToken)
 		if powerToken == 'MANA' then
 			local curPower = UnitPower(unit, 0);
 			if curPower > curPowers[0] then
@@ -1208,9 +1208,9 @@ function MT.CreatePowerRestoration(CoverFrame, unit)	-- TODO timer for different
 	else
 		MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_MAXPOWER", "UNIT_POWER_FREQUENT", "UNIT_SPELLCAST_SUCCEEDED");
 	end
-	CoverFrame.UPDATE_SHAPESHIFT_FORM(CoverFrame, "UPDATE_SHAPESHIFT_FORM");
+	CoverFrame:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
 	CoverFrame.power_restoration_time_timer = GetTime() + CoverFrame.power_restoration_time;
-	CoverFrame.UNIT_SPELLCAST_SUCCEEDED(CoverFrame, "UNIT_SPELLCAST_SUCCEEDED");
+	CoverFrame:UNIT_SPELLCAST_SUCCEEDED("UNIT_SPELLCAST_SUCCEEDED");
 	CoverFrame.curPowers = curPowers;
 	CoverFrame.maxPowers = maxPowers;
 	CoverFrame.power_restoration_spark = power_restoration_spark;
@@ -1231,9 +1231,9 @@ function MT.TogglePowerRestoration()
 	end
 	if VT.DB.power_restoration then
 		CoverFrame.powerType = nil;
-		CoverFrame.UPDATE_SHAPESHIFT_FORM(CoverFrame, "UPDATE_SHAPESHIFT_FORM");
+		CoverFrame:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
 		if CoverFrame.extra_power0 then
-			CoverFrame.extra_power0.UPDATE_SHAPESHIFT_FORM(CoverFrame.extra_power0, "UPDATE_SHAPESHIFT_FORM");
+			CoverFrame.extra_power0:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
 		end
 	else
 		CoverFrame.power_restoration_spark:Hide();
@@ -1255,9 +1255,9 @@ function MT.TogglePowerRestorationFull()
 		return;
 	end
 	CoverFrame.powerType = nil;
-	CoverFrame.UPDATE_SHAPESHIFT_FORM(CoverFrame, "UPDATE_SHAPESHIFT_FORM");
+	CoverFrame:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
 	if CoverFrame.extra_power0 then
-		CoverFrame.extra_power0.UPDATE_SHAPESHIFT_FORM(CoverFrame.extra_power0, "UPDATE_SHAPESHIFT_FORM");
+		CoverFrame.extra_power0:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
 	end
 end
 
@@ -1270,7 +1270,7 @@ function MT.CreatePartyAura(CoverFrame, unit)
 	local buffs = {  };
 	local n_shown_buffs = 0;
 	function CoverFrame:CreateAura(filter, index)
-		local aura = CreateFrame("FRAME", nil, CoverFrame);
+		local aura = CreateFrame("FRAME", nil, self);
 		aura:SetSize(VT.DB.partyAura_size, VT.DB.partyAura_size);
 		local cd = CreateFrame("COOLDOWN", nil, aura, "CooldownFrameTemplate");
 		-- cd:SetSwipeColor(1.0, 1.0, 1.0, 1.0);
@@ -1306,7 +1306,7 @@ function MT.CreatePartyAura(CoverFrame, unit)
 			local aura = self:CreateAura("HELPFUL", index);
 			buffs[#buffs + 1] = aura;
 			if index == 1 then
-				aura:SetPoint("TOPLEFT", CoverFrame, "TOPLEFT", ofs_x, ofs_y);
+				aura:SetPoint("TOPLEFT", self, "TOPLEFT", ofs_x, ofs_y);
 			else
 				if (index - 1) % n_icon_per_row == 0 then
 					aura:SetPoint("TOPLEFT", buffs[index - n_icon_per_row], "BOTTOMLEFT", 0, - inter);
@@ -1320,7 +1320,7 @@ function MT.CreatePartyAura(CoverFrame, unit)
 	function CoverFrame:Buff(index)
 		local name, texture, count, debuffType, duration, expirationTime, _, _, _, spellId, _, _, _, _, timeMod = MT.UnitAura(unit, index, "HELPFUL");
 		if name then
-			local aura = buffs[index] or CoverFrame:CreateBuff(index);
+			local aura = buffs[index] or self:CreateBuff(index);
 			aura:SetIcon(texture or TEXTURE_UNK);
 			aura:SetCooldown(expirationTime - duration, duration, timeMod);
 			aura:Show();
@@ -1351,7 +1351,7 @@ function MT.CreatePartyAura(CoverFrame, unit)
 	function CoverFrame:Debuff(index)
 		local name, texture, count, debuffType, duration, expirationTime, _, _, _, spellId, _, _, _, _, timeMod = MT.UnitAura(unit, index, "HARMFUL");
 		if name then
-			local aura = debuffs[index] or CoverFrame:CreateDebuff(index);
+			local aura = debuffs[index] or self:CreateDebuff(index);
 			aura:SetIcon(texture or TEXTURE_UNK);
 			aura:SetCooldown(expirationTime - duration, duration, timeMod);
 			aura:Show();
@@ -1390,20 +1390,20 @@ function MT.CreatePartyAura(CoverFrame, unit)
 				debuffs[1]:SetPoint("TOPLEFT", buffs[y * n_icon_per_row + 1], "BOTTOMLEFT", 0, - inter);
 			else
 				debuffs[1]:ClearAllPoints();
-				debuffs[1]:SetPoint("TOPLEFT", CoverFrame, "TOPLEFT", ofs_x, ofs_y);
+				debuffs[1]:SetPoint("TOPLEFT", self, "TOPLEFT", ofs_x, ofs_y);
 			end
 			if VT.IsCata or VT.IsWrath or VT.IsTBC then
-				CoverFrame.CastingBar:SetPoint("TOP", debuffs[1], "BOTTOM", 0, -2);
+				self.CastingBar:SetPoint("TOP", debuffs[1], "BOTTOM", 0, -2);
 			end
 		elseif buffs[1] ~= nil then
 			if VT.IsCata or VT.IsWrath or VT.IsTBC then
-				CoverFrame.CastingBar:SetPoint("TOP", buffs[1], "BOTTOM", 0, -2);
+				self.CastingBar:SetPoint("TOP", buffs[1], "BOTTOM", 0, -2);
 			end
 		else
 		end
 	end
-	function CoverFrame.UNIT_AURA(self, event, unitId)
-		self:UpdateAura();
+	function CoverFrame:UNIT_AURA(event, unitId)
+		return self:UpdateAura();
 	end
 	function CoverFrame:HidePartyAura()
 		for i = 1, n_shown_buffs do
@@ -1441,15 +1441,15 @@ end
 function MT.TogglePartyCastingBar()
 	if VT.DB.partyCast then
 		for i = 1, 4 do
-			local T = MT.CoverFrames['party' .. i].CastingBar;
-			T:SetScript("OnEvent", T.OnEvent);
-			T.OnEvent(T, "GROUP_ROSTER_UPDATE");
+			local CastingBar = MT.CoverFrames['party' .. i].CastingBar;
+			CastingBar:SetScript("OnEvent", CastingBar.OnEvent);
+			CastingBar:OnEvent("GROUP_ROSTER_UPDATE");
 		end
 	else
 		for i = 1, 4 do
-			local T = MT.CoverFrames['party' .. i].CastingBar;
-			T:SetScript("OnEvent", nil);
-			T:Hide();
+			local CastingBar = MT.CoverFrames['party' .. i].CastingBar;
+			CastingBar:SetScript("OnEvent", nil);
+			CastingBar:Hide();
 		end
 	end
 end
@@ -1473,97 +1473,88 @@ function MT.CreatePartyTargetingFrame(CoverFrame, unit, TargetingFramePosition, 
 	T:SetAttribute("unit", target);
 	RegisterUnitWatch(T);
 	T:RegisterForClicks("AnyUp")
-	if InCombatLockdown() then
-		MT.RunAfterCombat(function()
-			T:SetAttribute("*type1", "target");
-			T:SetAttribute("*type2", "togglemenu");
-		end);
-	else
-		T:SetAttribute("*type1", "target");
-		T:SetAttribute("*type2", "togglemenu");
-	end
+	T:SetAttribute("*type1", "target");
+	T:SetAttribute("*type2", "togglemenu");
 	local UnitFrameName = CoverFrame.UniFrame:GetName();
-	local _HBar = CoverFrame.UniFrame.healthbar or (UnitFrameName and _G[UnitFrameName .. "HealthBar"]);
-	local _PBar = CoverFrame.UniFrame.manabar or (UnitFrameName and _G[UnitFrameName .. "ManaBar"]);
 	if TargetingFramePosition == "LEFT" then
-		if _HBar and _PBar then
-			T:SetPoint("TOPRIGHT", _HBar, "TOPLEFT", -Offset, 0);
-			T:SetPoint("BOTTOMRIGHT", _PBar, "BOTTOMLEFT", -Offset, 0);
+		if CoverFrame._HBar and CoverFrame._PBar then
+			T:SetPoint("TOPRIGHT", CoverFrame._HBar, "TOPLEFT", -Offset, 0);
+			T:SetPoint("BOTTOMRIGHT", CoverFrame._PBar, "BOTTOMLEFT", -Offset, 0);
 		else
 			T:SetPoint("RIGHT", CoverFrame, "LEFT", -Offset, 0);
 		end
 	else
-		if _HBar and _PBar then
-			T:SetPoint("TOPLEFT", _HBar, "TOPRIGHT", Offset, 0);
-			T:SetPoint("BOTTOMLEFT", _PBar, "BOTTOMRIGHT", Offset, 0);
+		if CoverFrame._HBar and CoverFrame._PBar then
+			T:SetPoint("TOPLEFT", CoverFrame._HBar, "TOPRIGHT", Offset, 0);
+			T:SetPoint("BOTTOMLEFT", CoverFrame._PBar, "BOTTOMRIGHT", Offset, 0);
 		else
 			T:SetPoint("LEFT", CoverFrame, "RIGHT", Offset, 0);
 		end
 	end
 	T.watch_unit = unit;
 
-	local NAME = T:CreateFontString(nil, "OVERLAY");
-	NAME:SetFont(GameFontNormal:GetFont(), 13, "OUTLINE");
-	NAME:SetPoint("BOTTOM", T, "TOP", 0, 2);
-	T.NAME = NAME;
-	local hp = h * 0.33;
-	hp = hp - hp % 1.0;
-	local hh = h - hp;
-	local HB = CreateFrame("STATUSBAR", nil, T);
-	HB:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
-	HB:ClearAllPoints();
-	HB:SetPoint("TOP", T);
-	HB:SetSize(w, hh);
-	HB:SetMinMaxValues(0, 1);
-	T.HB = HB;
-	local PB = CreateFrame("STATUSBAR", nil, T);
-	PB:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
-	PB:ClearAllPoints();
-	PB:SetPoint("BOTTOM", T);
-	PB:SetSize(w, hp);
-	PB:SetMinMaxValues(0, 1);
-	T.PB = PB;
-	local BG = T:CreateTexture(nil, "BACKGROUND");
-	BG:SetSize(w + 12, h + 12);
-	BG:SetPoint("CENTER");
-	BG:SetAlpha(0.5);
-	T.BG = BG;
-	local BD = T:CreateTexture(nil, "BORDER");
-	BD:SetSize(w + 4, h + 4);
-	BD:SetPoint("CENTER");
-	BD:SetColorTexture(0.0, 0.0, 0.0, 1.0);
-	T.BD = BD;
+	local Name = T:CreateFontString(nil, "OVERLAY");
+	Name:SetFont(GameFontNormal:GetFont(), 13, "OUTLINE");
+	Name:SetPoint("BOTTOM", T, "TOP", 0, 2);
+	T.Name = Name;
+	local PBarHeight = h * 0.33;
+	PBarHeight = PBarHeight - PBarHeight % 1.0;
+	local HBarHeight = h - PBarHeight;
+	local HBar = CreateFrame("STATUSBAR", nil, T);
+	HBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
+	HBar:ClearAllPoints();
+	HBar:SetPoint("TOP", T);
+	HBar:SetSize(w, HBarHeight);
+	HBar:SetMinMaxValues(0, 1);
+	T.HBar = HBar;
+	local PBar = CreateFrame("STATUSBAR", nil, T);
+	PBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
+	PBar:ClearAllPoints();
+	PBar:SetPoint("BOTTOM", T);
+	PBar:SetSize(w, PBarHeight);
+	PBar:SetMinMaxValues(0, 1);
+	T.PBar = PBar;
+	local BackGround = T:CreateTexture(nil, "BACKGROUND");
+	BackGround:SetSize(w + 12, h + 12);
+	BackGround:SetPoint("CENTER");
+	BackGround:SetAlpha(0.5);
+	T.BackGround = BackGround;
+	local Border = T:CreateTexture(nil, "BORDER");
+	Border:SetSize(w + 4, h + 4);
+	Border:SetPoint("CENTER");
+	Border:SetColorTexture(0.0, 0.0, 0.0, 1.0);
+	T.Border = Border;
 
 	local isRetailStyle = false;
 	function T:UpdateName()
-		NAME:SetText(UnitName(target));
+		Name:SetText(UnitName(target));
 	end
 	function T:UpdateHealth()
 		local hv, hmv = UnitHealth(unit), UnitHealthMax(unit);
 		-- local hv, hmv = UnitHealth(target), UnitHealthMax(target);
-		HB:SetMinMaxValues(0, hmv);
-		HB:SetValue(hv);
+		HBar:SetMinMaxValues(0, hmv);
+		HBar:SetValue(hv);
 		if not isRetailStyle then
 			local r, g, b = MT.GetHealthColor(hv, hmv);
-			HB:SetStatusBarColor(r, g, b);
+			HBar:SetStatusBarColor(r, g, b);
 		end
 		-- HBarPercentage:SetText(MT.GetPercentageText(hv, hmv));
 	end
 	function T:UpdatePower()
 		local pmv = UnitPowerMax(target);
 		if pmv > 0 then
-			PB:SetMinMaxValues(0, pmv);
-			PB:SetValue(UnitPower(target));
+			PBar:SetMinMaxValues(0, pmv);
+			PBar:SetValue(UnitPower(target));
 			-- PBarPercentage:SetText(MT.GetPercentageText(hv, hmv));
 		else
-			PB:SetValue(0);
+			PBar:SetValue(0);
 			-- PBarPercentage:SetText("");
 		end
 	end
 	function T:UpdatePowerType()
 		local powerType, powerToken = UnitPowerType(target);
 		local color = PowerBarColor[powerType];
-		PB:SetStatusBarColor(color.r, color.g, color.b, 1.0);
+		PBar:SetStatusBarColor(color.r, color.g, color.b, 1.0);
 	end
 	function T:Update()
 		if UnitExists(target) then
@@ -1575,67 +1566,65 @@ function MT.CreatePartyTargetingFrame(CoverFrame, unit, TargetingFramePosition, 
 				local class = UnitClassBase(target);
 				local color = class and RAID_CLASS_COLORS[class];
 				if color then
-					NAME:SetTextColor(color.r, color.g, color.b, 1.0);
+					Name:SetTextColor(color.r, color.g, color.b, 1.0);
 				else
-					NAME:SetTextColor(1.0, 1.0, 1.0, 1.0);
+					Name:SetTextColor(1.0, 1.0, 1.0, 1.0);
 				end
 			else
-				NAME:SetTextColor(1.0, 1.0, 1.0, 1.0);
+				Name:SetTextColor(1.0, 1.0, 1.0, 1.0);
 			end
 			if isRetailStyle then
 				local r, g, b = UnitSelectionColor(target);
-				HB:SetStatusBarColor(r, g + b, 0);
+				HBar:SetStatusBarColor(r, g + b, 0);
 			else
-				BG:SetColorTexture(UnitSelectionColor(target));
+				BackGround:SetColorTexture(UnitSelectionColor(target));
 			end
 		end
 	end
 
-	function T.UNIT_TARGET(self, event, unitId)
-		if unit == unitId then
-			if VT.DB.partyTarget then
-				T:Update();
-			end
+	function T:UNIT_TARGET(event, unitId)
+		if unit == unitId and VT.DB.partyTarget then
+			return self:Update();
 		end
 	end
 
 	if not T:GetScript("OnUpdate") then
 		T:SetScript("OnUpdate", _noop_);
 	end
-	local update_timer = GetTime() + TARGET_UPDATE_INTERVAL;
-	T:HookScript("OnUpdate", function(self)
-		local TIME = GetTime();
-		if update_timer < TIME then
+	T.update_timer = 0.0;
+	T:HookScript("OnUpdate", function(self, elasped)
+		self.update_timer = self.update_timer + elasped;
+		if self.update_timer >= TARGET_UPDATE_INTERVAL then
+			self.update_timer = 0.0;
 			if UnitExists(target) then
-				self:Update();
+				return self:Update();
 			end
-			update_timer = update_timer + TARGET_UPDATE_INTERVAL;
 		end
 	end);
 	if not T:GetScript("OnShow") then
 		T:SetScript("OnShow", _noop_);
 	end
 	T:HookScript("OnShow", function(self)
-		self:Update();
+		return self:Update();
 	end);
 
 	MT.FrameRegisterUnitEvent(T, unit, "UNIT_TARGET");
-	T.UNIT_TARGET(T, "UNIT_TARGET", unit);
+	T:UNIT_TARGET("UNIT_TARGET", unit);
 
 	function T:SetRetailStyle(val)
 		isRetailStyle = val;
 		if val then
-			BG:Hide();
-			PB:Hide();
-			HB:SetSize(w, h);
-			HB:SetStatusBarTexture("Interface\\AddOns\\alaUnitFrame\\ARTWORK\\StatusBar");
+			BackGround:Hide();
+			PBar:Hide();
+			HBar:SetSize(w, h);
+			HBar:SetStatusBarTexture("Interface\\AddOns\\alaUnitFrame\\ARTWORK\\StatusBar");
 		else
-			BG:Show();
-			PB:Show();
-			HB:SetSize(w, hh);
-			HB:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
+			BackGround:Show();
+			PBar:Show();
+			HBar:SetSize(w, HBarHeight);
+			HBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
 		end
-		T:Update();
+		return self:Update();
 	end
 
 	return T;
@@ -1648,77 +1637,65 @@ function MT.TogglePartyTargetingFrameStyle()
 	MT.CoverFrames['party3'].target:SetRetailStyle(isRetailStyle);
 	MT.CoverFrames['party4'].target:SetRetailStyle(isRetailStyle);
 end
-function MT.TogglePartyTargetingFrame()
-	if InCombatLockdown() then
-		MT.RunAfterCombat(MT.TogglePartyTargetingFrame);
-	else
-		if VT.DB.partyTarget then
-			for i = 1, 4 do
-				local T = MT.CoverFrames['party' .. i].target;
-				RegisterUnitWatch(T);
-			end
-		else
-			for i = 1, 4 do
-				local T = MT.CoverFrames['party' .. i].target;
-				UnregisterUnitWatch(T);
-				T:Hide();
-			end
-		end
-	end
-end
-function MT.ToggleToTTarget()
-	if InCombatLockdown() then
-		MT.RunAfterCombat(MT.ToggleToTTarget);
-	else
-		local T = MT.CoverFrames['targettarget'].target;
-		if VT.DB.ToTTarget then
+function MT._Secure_TogglePartyTargetingFrame()
+	if VT.DB.partyTarget then
+		for i = 1, 4 do
+			local T = MT.CoverFrames['party' .. i].target;
 			RegisterUnitWatch(T);
-		else
+		end
+	else
+		for i = 1, 4 do
+			local T = MT.CoverFrames['party' .. i].target;
 			UnregisterUnitWatch(T);
 			T:Hide();
 		end
 	end
 end
-function MT.ToggleShiftFocus()
-	if InCombatLockdown() then
-		MT.RunAfterCombat(MT.ToggleShiftFocus);
+function MT._Secure_ToggleToTTarget()
+	local T = MT.CoverFrames['targettarget'].target;
+	if VT.DB.ToTTarget then
+		RegisterUnitWatch(T);
 	else
-		--	modifier .. "-type" .. mouse
-		--	modifier	= shift, alt or ctrl,
-		--	mouse		= 1 = left, 2 = right, 3 = middle, 4 and 5 = thumb buttons
-		if VT.DB.ShiftFocus then
-			PlayerFrame:SetAttribute("shift-type1", "focus");
-			TargetFrame:SetAttribute("shift-type1", "focus");
-			TargetFrameToT:SetAttribute("shift-type1", "focus");
-			MT.CoverFrames['targettarget'].target:SetAttribute("shift-type1", "focus");
-			-- if FocusFrame ~= nil then
-			-- 	FocusFrame:SetAttribute("shift-type1", "focus");
-			-- end
-			PartyMemberFrame1:SetAttribute("shift-type1", "focus");
-			PartyMemberFrame2:SetAttribute("shift-type1", "focus");
-			PartyMemberFrame3:SetAttribute("shift-type1", "focus");
-			PartyMemberFrame4:SetAttribute("shift-type1", "focus");
-			MT.CoverFrames['party1'].target:SetAttribute("shift-type1", "focus");
-			MT.CoverFrames['party2'].target:SetAttribute("shift-type1", "focus");
-			MT.CoverFrames['party3'].target:SetAttribute("shift-type1", "focus");
-			MT.CoverFrames['party4'].target:SetAttribute("shift-type1", "focus");
-		else
-			PlayerFrame:SetAttribute("shift-type1", nil);
-			TargetFrame:SetAttribute("shift-type1", nil);
-			TargetFrameToT:SetAttribute("shift-type1", nil);
-			MT.CoverFrames['targettarget'].target:SetAttribute("shift-type1", nil);
-			-- if FocusFrame ~= nil then
-			-- 	FocusFrame:SetAttribute("shift-type1", nil);
-			-- end
-			PartyMemberFrame1:SetAttribute("shift-type1", nil);
-			PartyMemberFrame2:SetAttribute("shift-type1", nil);
-			PartyMemberFrame3:SetAttribute("shift-type1", nil);
-			PartyMemberFrame4:SetAttribute("shift-type1", nil);
-			MT.CoverFrames['party1'].target:SetAttribute("shift-type1", nil);
-			MT.CoverFrames['party2'].target:SetAttribute("shift-type1", nil);
-			MT.CoverFrames['party3'].target:SetAttribute("shift-type1", nil);
-			MT.CoverFrames['party4'].target:SetAttribute("shift-type1", nil);
-		end
+		UnregisterUnitWatch(T);
+		T:Hide();
+	end
+end
+function MT._Secure_ToggleShiftFocus()
+	--	modifier .. "-type" .. mouse
+	--	modifier	= shift, alt or ctrl,
+	--	mouse		= 1 = left, 2 = right, 3 = middle, 4 and 5 = thumb buttons
+	if VT.DB.ShiftFocus then
+		PlayerFrame:SetAttribute("shift-type1", "focus");
+		TargetFrame:SetAttribute("shift-type1", "focus");
+		TargetFrameToT:SetAttribute("shift-type1", "focus");
+		MT.CoverFrames['targettarget'].target:SetAttribute("shift-type1", "focus");
+		-- if FocusFrame ~= nil then
+		-- 	FocusFrame:SetAttribute("shift-type1", "focus");
+		-- end
+		PartyMemberFrame1:SetAttribute("shift-type1", "focus");
+		PartyMemberFrame2:SetAttribute("shift-type1", "focus");
+		PartyMemberFrame3:SetAttribute("shift-type1", "focus");
+		PartyMemberFrame4:SetAttribute("shift-type1", "focus");
+		MT.CoverFrames['party1'].target:SetAttribute("shift-type1", "focus");
+		MT.CoverFrames['party2'].target:SetAttribute("shift-type1", "focus");
+		MT.CoverFrames['party3'].target:SetAttribute("shift-type1", "focus");
+		MT.CoverFrames['party4'].target:SetAttribute("shift-type1", "focus");
+	else
+		PlayerFrame:SetAttribute("shift-type1", nil);
+		TargetFrame:SetAttribute("shift-type1", nil);
+		TargetFrameToT:SetAttribute("shift-type1", nil);
+		MT.CoverFrames['targettarget'].target:SetAttribute("shift-type1", nil);
+		-- if FocusFrame ~= nil then
+		-- 	FocusFrame:SetAttribute("shift-type1", nil);
+		-- end
+		PartyMemberFrame1:SetAttribute("shift-type1", nil);
+		PartyMemberFrame2:SetAttribute("shift-type1", nil);
+		PartyMemberFrame3:SetAttribute("shift-type1", nil);
+		PartyMemberFrame4:SetAttribute("shift-type1", nil);
+		MT.CoverFrames['party1'].target:SetAttribute("shift-type1", nil);
+		MT.CoverFrames['party2'].target:SetAttribute("shift-type1", nil);
+		MT.CoverFrames['party3'].target:SetAttribute("shift-type1", nil);
+		MT.CoverFrames['party4'].target:SetAttribute("shift-type1", nil);
 	end
 end
 
@@ -1835,8 +1812,8 @@ function MT.HookUnitFrame(UniFrame, unit, FrameDef)
 				PBarTexture:SetVertexColor(_PBar:GetStatusBarColor());
 			end
 			if FrameDef.BarEventDriven then
-				function CoverFrame.UNIT_DISPLAYPOWER(self, event, unitId)
-					CoverFrame:UpdatePowerType();
+				function CoverFrame:UNIT_DISPLAYPOWER(event, unitId)
+					self:UpdatePowerType();
 				end
 				MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_DISPLAYPOWER");
 			elseif FrameDef.BarEventDriven == false then
@@ -1965,14 +1942,14 @@ function MT.HookUnitFrame(UniFrame, unit, FrameDef)
 			end
 
 			if FrameDef.BarEventDriven then
-				function CoverFrame.UNIT_HEALTH(self, event, unitId)
-					self:UpdateHealth();
+				function CoverFrame:UNIT_HEALTH(event, unitId)
+					return self:UpdateHealth();
 				end
-				function CoverFrame.UNIT_MAXHEALTH(self, event, unitId)
-					self:UpdateHealth();
+				function CoverFrame:UNIT_MAXHEALTH(event, unitId)
+					return self:UpdateHealth();
 				end
-				function CoverFrame.UNIT_POWER_UPDATE(self, event, unitId)
-					self:UpdatePower();
+				function CoverFrame:UNIT_POWER_UPDATE(event, unitId)
+					return self:UpdatePower();
 				end
 				if pcall(MT.FrameRegisterUnitEvent, CoverFrame, 'player', "UNIT_HEALTH_FREQUENT") then
 					CoverFrame.UNIT_HEALTH_FREQUENT = CoverFrame.UNIT_HEALTH;
@@ -1983,11 +1960,11 @@ function MT.HookUnitFrame(UniFrame, unit, FrameDef)
 				MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_POWER_UPDATE");
 			elseif FrameDef.BarEventDriven == false then
 				hooksecurefunc(_HBar, "SetValue", function(self, val)
-					CoverFrame:UpdateHealth();
+					return CoverFrame:UpdateHealth();
 				end);
 				--hooksecurefunc(_HBar, "SetMinMaxValues", function(self, minV, maxV)end);
 				hooksecurefunc(_PBar, "SetValue", function(self, val)
-					CoverFrame:UpdatePower();
+					return CoverFrame:UpdatePower();
 				end);
 			end
 
@@ -2026,6 +2003,8 @@ function MT.HookUnitFrame(UniFrame, unit, FrameDef)
 		CoverFrame.PBarValue = _VirtualWidget;
 		CoverFrame.HBarPercentage = _VirtualWidget;
 		CoverFrame.PBarPercentage = _VirtualWidget;
+		CoverFrame._HBar = _HBar;
+		CoverFrame._PBar = _PBar;
 		-- CoverFrame.HBColor = _VirtualWidget;
 	end
 
@@ -2085,7 +2064,7 @@ function MT.HookUnitFrame(UniFrame, unit, FrameDef)
 		function CoverFrame:PLAYER_UNGHOST()
 			Portrait3D:SetLight(true, LightAlive);
 		end
-		function CoverFrame.UNIT_MODEL_CHANGED(self)
+		function CoverFrame:UNIT_MODEL_CHANGED()
 			self:Update3DPortrait();
 		end
 		MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_MODEL_CHANGED");
@@ -2106,12 +2085,12 @@ function MT.HookUnitFrame(UniFrame, unit, FrameDef)
 			Class:SetPoint("TOPLEFT", 116, -12);
 		end
 		Class:SetFrameLevel(CoverFrame:GetFrameLevel() + 1);
-		Class.BG = Class:CreateTexture(nil, "BACKGROUND", nil, SubLayerLevelOffset);
-		Class.BG:SetTexture("Interface\\Minimap\\UI-Minimap-Background");
-		Class.BG:SetWidth(20);
-		Class.BG:SetHeight(20);
-		Class.BG:SetPoint("CENTER");
-		Class.BG:SetVertexColor(0, 0, 0, 0.7);
+		Class.BackGround = Class:CreateTexture(nil, "BACKGROUND", nil, SubLayerLevelOffset);
+		Class.BackGround:SetTexture("Interface\\Minimap\\UI-Minimap-Background");
+		Class.BackGround:SetWidth(20);
+		Class.BackGround:SetHeight(20);
+		Class.BackGround:SetPoint("CENTER");
+		Class.BackGround:SetVertexColor(0, 0, 0, 0.7);
 		Class.Border = Class:CreateTexture(nil, "OVERLAY", nil, SubLayerLevelOffset);
 		Class.Border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder");
 		Class.Border:SetWidth(54);
@@ -2190,9 +2169,9 @@ function MT.HookUnitFrame(UniFrame, unit, FrameDef)
 	MT.CoverFrames[unit] = CoverFrame;
 
 	function CoverFrame:UpdateLevel()
-		CoverFrame.LEVEL = UnitLevel(unit);
-		if CoverFrame.LevelText then
-			CoverFrame.LevelText:SetText(self.LEVEL);
+		self.LEVEL = UnitLevel(unit);
+		if self.LevelText then
+			self.LevelText:SetText(self.LEVEL);
 		end
 	end
 
@@ -2205,11 +2184,7 @@ function MT.HookUnitFrame(UniFrame, unit, FrameDef)
 		UniFrame:SetScale(v);
 	end
 	function CoverFrame:Scale()
-		if InCombatLockdown() then
-			MT.RunAfterCombat(CoverFrame.ApplyScale);
-		else
-			CoverFrame:ApplyScale();
-		end
+		MT.RunAfterCombat(self.ApplyScale);
 	end
 
 	CoverFrame:UpdateClass();
@@ -2292,12 +2267,12 @@ function MT.CreateThreatBar(CoverFrame, ppos, point, relPoint, x, y)
 	Value:SetFont(TextStatusBarText:GetFont(), 13, "OUTLINE");
 	Value:SetPoint(ppos);
 	Threat.Value = Value;
-	Threat.timer = THREAT_UPDATE_INTERVAL;
+	Threat.update_timer = THREAT_UPDATE_INTERVAL;
 	Threat:SetScript("OnUpdate", function(self, elasped)
-		self.timer = self.timer + elasped;
-		if self.__update or self.timer >= THREAT_UPDATE_INTERVAL then
+		self.update_timer = self.update_timer + elasped;
+		if self.__update or self.update_timer >= THREAT_UPDATE_INTERVAL then
 			self.__update = nil;
-			self.timer = 0.0;
+			self.update_timer = 0.0;
 			local unit = self.unit;
 			if UnitExists(unit) and not UnitIsDead(unit) and UnitIsEnemy('player', unit) and not UnitPlayerControlled(unit) then
 				local maxThreat = -1;
@@ -2360,7 +2335,7 @@ function MT.CreateThreatBar(CoverFrame, ppos, point, relPoint, x, y)
 		end
 	end);
 	Threat:SetScript("OnHide", function(self)
-		self.timer = THREAT_UPDATE_INTERVAL;
+		self.update_timer = THREAT_UPDATE_INTERVAL;
 	end);
 	Threat:SetScript("OnEvent", function(self, event)
 		self.__update = true;
@@ -2370,47 +2345,31 @@ function MT.CreateThreatBar(CoverFrame, ppos, point, relPoint, x, y)
 end
 
 
-function MT.SetUnitFramesDefaultPosition()
+function MT._Secure_SetUnitFramesDefaultPosition()
 	if not TargetFrame:IsUserPlaced() then
 		TargetFrame:SetUserPlaced(true);
 		TargetFrame:ClearAllPoints();
 		TargetFrame:SetPoint("LEFT", PlayerFrame, "RIGHT", 100, 0);
 	end
 end
-function MT.SetPlayerFramePosition()
-	if InCombatLockdown() then
-		MT.RunAfterCombat(MT.SetPlayerFramePosition);
-	else
-		PlayerFrame:SetUserPlaced(true);
-		PlayerFrame:ClearAllPoints();
-		PlayerFrame:SetPoint("CENTER", UIParent, "CENTER", VT.DB.pRelX, VT.DB.pRelY);
-	end
+function MT._Secure_SetPlayerFramePosition()
+	PlayerFrame:SetUserPlaced(true);
+	PlayerFrame:ClearAllPoints();
+	PlayerFrame:SetPoint("CENTER", UIParent, "CENTER", VT.DB.pRelX, VT.DB.pRelY);
 end
-function MT.ResetPlayerFramePosition()
-	if InCombatLockdown() then
-		MT.RunAfterCombat(MT.ResetPlayerFramePosition);
-	else
-		PlayerFrame:ClearAllPoints();
-		PlayerFrame_ResetUserPlacedPosition();
-	end
+function MT._Secure_ResetPlayerFramePosition()
+	PlayerFrame:ClearAllPoints();
+	PlayerFrame_ResetUserPlacedPosition();
 end
-function MT.SetTargetFramePosition()
-	if InCombatLockdown() then
-		MT.RunAfterCombat(MT.SetTargetFramePosition);
-	else
-		TargetFrame:SetUserPlaced(true);
-		TargetFrame:ClearAllPoints();
-		TargetFrame:SetPoint("CENTER", UIParent, "CENTER", VT.DB.tRelX, VT.DB.tRelY);
-	end
+function MT._Secure_SetTargetFramePosition()
+	TargetFrame:SetUserPlaced(true);
+	TargetFrame:ClearAllPoints();
+	TargetFrame:SetPoint("CENTER", UIParent, "CENTER", VT.DB.tRelX, VT.DB.tRelY);
 end
-function MT.ResetTargetFramePosition()
-	if InCombatLockdown() then
-		MT.RunAfterCombat(MT.ResetTargetFramePosition);
-	else
-		TargetFrame:ClearAllPoints();
-		TargetFrame_ResetUserPlacedPosition();
-		MT.SetUnitFramesDefaultPosition();
-	end
+function MT._Secure_ResetTargetFramePosition()
+	TargetFrame:ClearAllPoints();
+	TargetFrame_ResetUserPlacedPosition();
+	MT._Secure_SetUnitFramesDefaultPosition();
 end
 
 function MT.SetUnitFrameBorder(CoverFrame, index)
@@ -2464,25 +2423,25 @@ function MT.InitPlayerFrame()
 	MT.SecureHideLayer(PlayerFrameManaBarTextLeft);
 	MT.SecureHideLayer(PlayerFrameManaBarTextRight);
 	MT.SecureHideLayer(PlayerFrameTexture);
-	CoverFrame.status = CoverFrame:CreateTexture(nil, "BACKGROUND");
-	CoverFrame.status:SetSize(PlayerFrameTexture:GetSize());
-	CoverFrame.status:SetPoint("CENTER", PlayerFrameTexture);
-	CoverFrame.status:SetTexture("interface\\targetingframe\\ui-targetingframe-flash");
+	CoverFrame.CombatStatus = CoverFrame:CreateTexture(nil, "BACKGROUND");
+	CoverFrame.CombatStatus:SetSize(PlayerFrameTexture:GetSize());
+	CoverFrame.CombatStatus:SetPoint("CENTER", PlayerFrameTexture);
+	CoverFrame.CombatStatus:SetTexture("interface\\targetingframe\\ui-targetingframe-flash");
 	if VT.IsWrath or VT.IsTBC or VT.IsVanilla then
-		CoverFrame.status:SetTexCoord(1.0, 0.09375, 0.0, 0.78125 / 4);
+		CoverFrame.CombatStatus:SetTexCoord(1.0, 0.09375, 0.0, 0.78125 / 4);
 	end
-	CoverFrame.status:Hide();
-	CoverFrame.status:SetVertexColor(1.0, 0.0, 0.0, 1.0);
+	CoverFrame.CombatStatus:Hide();
+	CoverFrame.CombatStatus:SetVertexColor(1.0, 0.0, 0.0, 1.0);
 	if InCombatLockdown() then
-		CoverFrame.status:Show();
+		CoverFrame.CombatStatus:Show();
 	else
-		CoverFrame.status:Hide();
+		CoverFrame.CombatStatus:Hide();
 	end
 	function CoverFrame:PLAYER_REGEN_ENABLED()
-		CoverFrame.status:Hide();
+		self.CombatStatus:Hide();
 	end
 	function CoverFrame:PLAYER_REGEN_DISABLED()
-		CoverFrame.status:Show();
+		self.CombatStatus:Show();
 	end
 	CoverFrame.HomePartyIcon = CoverFrame:CreateTexture(nil, "OVERLAY");
 	CoverFrame.HomePartyIcon:SetTexture("Interface\\FriendsFrame\\UI-Toast-FriendOnlineIcon");
@@ -2492,18 +2451,18 @@ function MT.InitPlayerFrame()
 	CoverFrame.InstancePartyIcon:SetPoint("TOPLEFT", 49, 2);
 	function CoverFrame:GROUP_ROSTER_UPDATE()
 		if IsInGroup(LE_PARTY_CATEGORY_HOME) and IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
-			CoverFrame.HomePartyIcon:Show();
-			CoverFrame.InstancePartyIcon:Show();
+			self.HomePartyIcon:Show();
+			self.InstancePartyIcon:Show();
 		else
-			CoverFrame.HomePartyIcon:Hide();
-			CoverFrame.InstancePartyIcon:Hide();
+			self.HomePartyIcon:Hide();
+			self.InstancePartyIcon:Hide();
 		end
 	end
 	function CoverFrame:UPDATE_CHAT_COLOR()
 		local public = ChatTypeInfo["INSTANCE_CHAT"];
 		local private = ChatTypeInfo["PARTY"];
-		CoverFrame.HomePartyIcon:SetVertexColor(private.r, private.g, private.b);
-		CoverFrame.InstancePartyIcon:SetVertexColor(public.r, public.g, public.b);
+		self.HomePartyIcon:SetVertexColor(private.r, private.g, private.b);
+		self.InstancePartyIcon:SetVertexColor(public.r, public.g, public.b);
 	end
 	CoverFrame.RaidTarget = CoverFrame:CreateTexture(nil, "OVERLAY");
 	CoverFrame.RaidTarget:SetSize(26, 26);
@@ -2572,7 +2531,7 @@ function MT.InitTargetFrame()
 	};
 	local CoverFrame = MT.HookUnitFrame(TargetFrame, 'target', FrameDef);
 	MT.FrameRegisterEvent(CoverFrame, "PLAYER_TARGET_CHANGED");
-	function CoverFrame.PLAYER_TARGET_CHANGED(self, event)
+	function CoverFrame:PLAYER_TARGET_CHANGED(event)
 		if UnitExists('target') then
 			self:UpdateClass();
 			self:UpdateLevel();
@@ -2591,7 +2550,7 @@ function MT.InitTargetFrame()
 			self:Update3DPortrait();
 		end
 	end	
-	function CoverFrame.UNIT_LEVEL(self, event, unitId)
+	function CoverFrame:UNIT_LEVEL(event, unitId)
 		self:UpdateLevel();
 	end
 	MT.FrameRegisterUnitEvent(CoverFrame, 'target', "UNIT_LEVEL");
@@ -2651,7 +2610,7 @@ function MT.InitToTFrame()
 		self:UpdatePower();
 		self:UpdatePowerType();
 	end);
-	function CoverFrame.UNIT_TARGET(self, event, unitId)
+	function CoverFrame:UNIT_TARGET(event, unitId)
 		self:UpdatePowerType();
 	end
 	MT.FrameRegisterUnitEvent(CoverFrame, 'target', "UNIT_TARGET");
@@ -2659,17 +2618,11 @@ function MT.InitToTFrame()
 	CoverFrame:SetFrameStrata("HIGH");
 	CoverFrame:SetFrameLevel(MT.CoverFrames['target']:GetFrameLevel() + 128);
 
-	if InCombatLockdown() then
-		MT.RunAfterCombat(function()
-			TargetFrameToT:ClearAllPoints();
-			-- TargetFrameToT:SetPoint("RIGHT", TargetFrame, "RIGHT", 50, 0);
-			TargetFrameToT:SetPoint("BOTTOMRIGHT", TargetFrame, "BOTTOMRIGHT", -15, -20);
-		end);
-	else
+	MT.RunAfterCombat(function()
 		TargetFrameToT:ClearAllPoints();
 		-- TargetFrameToT:SetPoint("RIGHT", TargetFrame, "RIGHT", 50, 0);
 		TargetFrameToT:SetPoint("BOTTOMRIGHT", TargetFrame, "BOTTOMRIGHT", -15, -20);
-	end
+	end);
 end
 function MT.InitFocusFrame()
 	local FrameDef = {
@@ -2691,7 +2644,7 @@ function MT.InitFocusFrame()
 	};
 	local CoverFrame = MT.HookUnitFrame(FocusFrame, 'focus', FrameDef);
 	MT.FrameRegisterEvent(CoverFrame, "PLAYER_FOCUS_CHANGED");
-	function CoverFrame.PLAYER_FOCUS_CHANGED(self, event)
+	function CoverFrame:PLAYER_FOCUS_CHANGED(event)
 		if UnitExists('focus') then
 			self:UpdateClass();
 			self:UpdateLevel();
@@ -2710,7 +2663,7 @@ function MT.InitFocusFrame()
 			self:Update3DPortrait();
 		end
 	end	
-	function CoverFrame.UNIT_LEVEL(self, event, unitId)
+	function CoverFrame:UNIT_LEVEL(event, unitId)
 		self:UpdateLevel();
 	end
 	MT.FrameRegisterUnitEvent(CoverFrame, 'focus', "UNIT_LEVEL");
@@ -2767,7 +2720,7 @@ function MT.InitToFFrame()
 		self:UpdatePower();
 		self:UpdatePowerType();
 	end);
-	function CoverFrame.UNIT_TARGET(self, event, unitId)
+	function CoverFrame:UNIT_TARGET(event, unitId)
 		self:UpdatePowerType();
 	end
 	MT.FrameRegisterUnitEvent(CoverFrame, 'focus', "UNIT_TARGET");
@@ -2775,15 +2728,10 @@ function MT.InitToFFrame()
 	CoverFrame:SetFrameStrata("HIGH");
 	CoverFrame:SetFrameLevel(CoverFrame:GetFrameLevel() + 128);
 
-	-- if InCombatLockdown() then
-	-- 	MT.RunAfterCombat(function()
-	-- 		FocusFrameToT:ClearAllPoints();
-	-- 		FocusFrameToT:SetPoint("RIGHT", FocusFrame, "RIGHT", 50, 0);
-	-- 	end);
-	-- else
+	-- MT.RunAfterCombat(function()
 	-- 	FocusFrameToT:ClearAllPoints();
 	-- 	FocusFrameToT:SetPoint("RIGHT", FocusFrame, "RIGHT", 50, 0);
-	-- end
+	-- end);
 end
 function MT.InitPartyFrames()
 	local FrameDef = {
@@ -2912,21 +2860,13 @@ function MT.InitPartyFrames()
 		CoverFrame:UNIT_AURA();
 	end
 
-	if InCombatLockdown() then
-		MT.RunAfterCombat(function()
-			for i = 2, 4 do
-				local UnitFrame = _G["PartyMemberFrame" .. i];
-				UnitFrame:ClearAllPoints();
-				UnitFrame:SetPoint("TOPLEFT", _G["PartyMemberFrame" .. (i - 1) .. "PetFrame"], "BOTTOMLEFT", -23, -22);
-			end
-		end);
-	else
+	MT.RunAfterCombat(function()
 		for i = 2, 4 do
 			local UnitFrame = _G["PartyMemberFrame" .. i];
 			UnitFrame:ClearAllPoints();
 			UnitFrame:SetPoint("TOPLEFT", _G["PartyMemberFrame" .. (i - 1) .. "PetFrame"], "BOTTOMLEFT", -23, -22);
 		end
-	end
+	end);
 end
 function MT.ApplyFrameSettings()
 	for unit, CoverFrame in next, MT.CoverFrames do
@@ -2959,22 +2899,22 @@ function MT.ApplyFrameSettings()
 	MT.TogglePowerRestoration();
 	MT.TogglePowerRestorationFull();
 	MT.ToggleExtraPower0();
-	MT.TogglePartyTargetingFrame();
+	MT.RunAfterCombat(MT._Secure_TogglePartyTargetingFrame);
 	MT.TogglePartyTargetingFrameStyle();
 	MT.TogglePartyAura();
 	if VT.IsCata or VT.IsWrath or VT.IsTBC then
 		MT.TogglePartyCastingBar();
 	end
-	MT.ToggleToTTarget();
+	MT.RunAfterCombat(MT._Secure_ToggleToTTarget);
 	if VT.DB.playerPlaced then
-		MT.SetPlayerFramePosition();
-		MT.SetTargetFramePosition();
+		MT.RunAfterCombat(MT._Secure_SetPlayerFramePosition);
+		MT.RunAfterCombat(MT._Secure_SetTargetFramePosition);
 	-- else
-	-- 	MT.ResetPlayerFramePosition();
-	-- 	MT.ResetTargetFramePosition();
+	-- 	MT.RunAfterCombat(MT._Secure_ResetPlayerFramePosition);
+	-- 	MT.RunAfterCombat(MT._Secure_ResetTargetFramePosition);
 	end
 	if (VT.IsCata or VT.IsWrath or VT.IsTBC) and VT.DB.ShiftFocus then
-		MT.ToggleShiftFocus();
+		MT.RunAfterCombat(MT._Secure_ToggleShiftFocus);
 	end
 
 	for unit, CoverFrame in next, MT.CoverFrames do
