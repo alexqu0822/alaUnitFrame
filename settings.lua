@@ -157,9 +157,9 @@ local function CreateSlider(specific, key, label_text, minRange, maxRange, stepS
 	valueBox:SetMaxLetters(5)
 
 	uireimp._SetBackdrop(valueBox, {
-		bgFile = "Interface/ChatFrame/ChatFrameBackground", 
-		edgeFile = "Interface/ChatFrame/ChatFrameBackground", 
-		tile = true, edgeSize = 1, tileSize = 5, 
+		bgFile = "Interface/ChatFrame/ChatFrameBackground",
+		edgeFile = "Interface/ChatFrame/ChatFrameBackground",
+		tile = true, edgeSize = 1, tileSize = 5,
 	});
 	uireimp._SetBackdropColor(valueBox, 0, 0, 0, 0.5);
 	uireimp._SetBackdropBorderColor(valueBox, 0.3, 0.3, 0.3, 0.8);
@@ -171,7 +171,7 @@ local function CreateSlider(specific, key, label_text, minRange, maxRange, stepS
 
 	return slider;
 end
-local function DropOnClick(button, param)
+local function DropOnClick(button, nil, param)
 	local drop, key, value, desc = param[1], param[2], param[3], param[4];
 	VT.DB[key] = value;
 	drop.fontString:SetText(desc);
@@ -209,7 +209,7 @@ local function CreateDrop(specific, key, labelText, i, j, data)
 	fs:SetPoint("LEFT", drop, "RIGHT", 0, 0);
 
 	local menudef = {
-		handler = DropOnClick, 
+		handler = DropOnClick,
 	};
 	for _, v in next, data do
 		menudef[#menudef + 1] = {
@@ -221,7 +221,7 @@ local function CreateDrop(specific, key, labelText, i, j, data)
 		end
 	end
 
-	drop:SetScript("OnClick", function(self) menulib.ShowMenu(self, "BOTTOMRIGHT", db); end);
+	drop:SetScript("OnClick", function(self) menulib.ShowMenu(self, "BOTTOMRIGHT", menudef); end);
 	drop.label = label;
 
 	label:SetPoint("LEFT", ConfigFrame, "TOPLEFT", (i - 1) * col_width + 4, - row_height * (j - 1) - 12);
@@ -258,7 +258,7 @@ local function CheckButtonOnClick(self)
 					MT.AttachCastBar(PlayerFrame, CastingBarFrame, nil, 32, 20, 160, 32, "RIGHT");
 					if IsAddOnLoaded("ClassicCastbars") then
 						MT.AttachClassicCastBar(TargetFrame, nil, nil, - 32, 20, 160, 32, "LEFT");
-					end	
+					end
 				else
 					MT.ResetCastBar(CastingBarFrame);
 					MT.ResetClassicCastBar();

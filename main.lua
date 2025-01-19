@@ -967,7 +967,7 @@ else
 end
 -- VERIFIED		PRIEST MAGE
 -- MAYBE RIGHT	DRUID PALADIN HUNTER
--- TODO			WARLOCK  - SHAMAN  
+-- TODO			WARLOCK  - SHAMAN 
 function MT.EstimateMP5(CoverFrame)
 	--[[
 		Druid (feral), Hunter, Paladin, Warlock: Spirit/5 + 15
@@ -1156,7 +1156,7 @@ function MT.CreatePowerRestoration(CoverFrame, unit)	-- TODO timer for different
 			maxPowers[powerType] = maxPower;
 			After(GetTickTime(), function() curPowers[powerType] = UnitPower(unit, powerType); end);
 		end
-	end	
+	end
 	function CoverFrame:UNIT_POWER_FREQUENT(event, unitId, powerToken)
 		if powerToken == 'MANA' then
 			local curPower = UnitPower(unit, 0);
@@ -1891,7 +1891,6 @@ function MT.HookUnitFrame(UniFrame, unit, FrameDef)
 		if FrameDef.BarCoverTexture or FrameDef.BarCreateValue or FrameDef.BarCreatePercentage then
 			function CoverFrame:UpdateHealth()
 				local hv, hmv = UnitHealth(unit), UnitHealthMax(unit);
-				-- local hv, hmv = UnitHealth(unit), UnitHealthMax(unit);
 				if hmv > 0 then
 					if MT.GetConfig(configKey, "HBarValue") then
 						HBarValue:SetText(hv .. " / " .. hmv);
@@ -1997,7 +1996,7 @@ function MT.HookUnitFrame(UniFrame, unit, FrameDef)
 		end
 		function CoverFrame:BarTextAlpha(v)
 		end
-		CoverFrame.HBarTexture = _VirtualWidget; 
+		CoverFrame.HBarTexture = _VirtualWidget;
 		CoverFrame.PBarTexture = _VirtualWidget;
 		CoverFrame.HBarValue = _VirtualWidget;
 		CoverFrame.PBarValue = _VirtualWidget;
@@ -2549,7 +2548,7 @@ function MT.InitTargetFrame()
 			end
 			self:Update3DPortrait();
 		end
-	end	
+	end
 	function CoverFrame:UNIT_LEVEL(event, unitId)
 		self:UpdateLevel();
 	end
@@ -2662,7 +2661,7 @@ function MT.InitFocusFrame()
 			end
 			self:Update3DPortrait();
 		end
-	end	
+	end
 	function CoverFrame:UNIT_LEVEL(event, unitId)
 		self:UpdateLevel();
 	end
@@ -2885,7 +2884,7 @@ function MT.ApplyFrameSettings()
 			--MT.AttachCastBar(TargetFrame, TargetFrameSpellBar, nil, 0, 32, 180, 24, "LEFT");
 			if IsAddOnLoaded("ClassicCastbars") then
 				MT.AttachClassicCastBar(TargetFrame, nil, nil, - 32, 20, 160, 32, "LEFT");
-			end	
+			end
 		end
 	end
 	if not IsAddOnLoaded("ClassicCastbars") then
@@ -2895,7 +2894,7 @@ function MT.ApplyFrameSettings()
 				MT.ResetClassicCastBar();
 			end
 		end)
-	end	
+	end
 	MT.TogglePowerRestoration();
 	MT.TogglePowerRestorationFull();
 	MT.ToggleExtraPower0();
