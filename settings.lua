@@ -171,7 +171,7 @@ local function CreateSlider(specific, key, label_text, minRange, maxRange, stepS
 
 	return slider;
 end
-local function DropOnClick(button, nil, param)
+local function DropOnClick(button, _, param)
 	local drop, key, value, desc = param[1], param[2], param[3], param[4];
 	VT.DB[key] = value;
 	drop.fontString:SetText(desc);
