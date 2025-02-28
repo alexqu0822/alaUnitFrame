@@ -57,6 +57,7 @@ local uireimp = __ala_meta__.uireimp;
 	local GameTooltip = GameTooltip
 	local TargetFrame = TargetFrame;
 	local PlayerFrame = PlayerFrame;
+	local SetRaidTargetIconTexture = SetRaidTargetIconTexture;
 	local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS;
 	local RAID_CLASS_COLORS = RAID_CLASS_COLORS;
 	local PowerBarColor = PowerBarColor;
@@ -128,9 +129,9 @@ function MT.SetConfigValue(configKey, key, v)
 				else
 					CoverFrame[key](CoverFrame, v);
 				end
+				CoverFrame:UpdatePowerType();
 				CoverFrame:UpdateHealth();
 				CoverFrame:UpdatePower();
-				CoverFrame:UpdatePowerType();
 				CoverFrame:Update3DPortrait();
 				CoverFrame:UpdateClass();
 			end
@@ -151,9 +152,9 @@ function MT.SetConfigValue(configKey, key, v)
 					else
 						CoverFrame[key](CoverFrame, v);
 					end
+					CoverFrame:UpdatePowerType();
 					CoverFrame:UpdateHealth();
 					CoverFrame:UpdatePower();
-					CoverFrame:UpdatePowerType();
 					CoverFrame:Update3DPortrait();
 					CoverFrame:UpdateClass();
 				end
@@ -172,9 +173,9 @@ function MT.SetConfigBoolean(configKey, key, v)
 				else
 					CoverFrame[key]:Hide();
 				end
+				CoverFrame:UpdatePowerType();
 				CoverFrame:UpdateHealth();
 				CoverFrame:UpdatePower();
-				CoverFrame:UpdatePowerType();
 				CoverFrame:Update3DPortrait();
 				CoverFrame:UpdateClass();
 			end
@@ -195,9 +196,9 @@ function MT.SetConfigBoolean(configKey, key, v)
 					else
 						CoverFrame[key]:Hide();
 					end
+					CoverFrame:UpdatePowerType();
 					CoverFrame:UpdateHealth();
 					CoverFrame:UpdatePower();
-					CoverFrame:UpdatePowerType();
 					CoverFrame:Update3DPortrait();
 					CoverFrame:UpdateClass();
 				end
@@ -448,6 +449,7 @@ function MT.CreateExtraPower0(CoverFrame, unit, PortraitPosition)
 			end
 		end
 		function extra_power0:UpdatePower()
+			local unit = UnitFrame.unit or unit;
 			local pv, pmv = UnitPower(unit, 0), UnitPowerMax(unit, 0);
 			self:SetMinMaxValues(0, pmv);
 			self:SetValue(pv);
@@ -480,6 +482,7 @@ function MT.CreateExtraPower0(CoverFrame, unit, PortraitPosition)
 			return self:UpdatePower();
 		end
 		function extra_power0:UPDATE_SHAPESHIFT_FORM(event)
+			local unit = UnitFrame.unit or unit;
 			local powerType, powerToken = UnitPowerType(unit);
 			if powerType == 0 then
 				self:Hide();
@@ -488,33 +491,45 @@ function MT.CreateExtraPower0(CoverFrame, unit, PortraitPosition)
 				return self:UpdatePowerMax();
 			end
 		end
-		function extra_power0:UNIT_DISPLAYPOWER(event, unitId)
-			local powerType, powerToken = UnitPowerType(unit);
-			if powerType == 0 then
-				self:Hide();
-			elseif VT.DB.extra_power0 then
-				self:Show();
-				return self:UpdatePowerMax();
+		function extra_power0:UNIT_DISPLAYPOWER(event, unitID)
+			local unit = UnitFrame.unit or unit;
+			if unit == unitID then
+				local powerType, powerToken = UnitPowerType(unit);
+				if powerType == 0 then
+					self:Hide();
+				elseif VT.DB.extra_power0 then
+					self:Show();
+					return self:UpdatePowerMax();
+				end
 			end
 		end
-		function extra_power0:UNIT_MAXPOWER(event, unitId, powerToken)
-			if powerToken == 'MANA' then
-				self:SetMinMaxValues(0, UnitPowerMax(unit, 0));
-				return self:UpdatePower();
+		function extra_power0:UNIT_MAXPOWER(event, unitID, powerToken)
+			local unit = UnitFrame.unit or unit;
+			if unit == unitID then
+				if powerToken == 'MANA' then
+					self:SetMinMaxValues(0, UnitPowerMax(unit, 0));
+					return self:UpdatePower();
+				end
 			end
 		end
-		function extra_power0:UNIT_POWER_UPDATE(event, unitId, powerToken)
-			if powerToken == 'MANA' then
-				return self:UpdatePower();
+		function extra_power0:UNIT_POWER_UPDATE(event, unitID, powerToken)
+			local unit = UnitFrame.unit or unit;
+			if unit == unitID then
+				if powerToken == 'MANA' then
+					return self:UpdatePower();
+				end
 			end
 		end
-		function extra_power0:UNIT_POWER_FREQUENT(event, unitId, powerToken)
-			if powerToken == 'MANA' then
-				return self:UpdatePower();
+		function extra_power0:UNIT_POWER_FREQUENT(event, unitID, powerToken)
+			local unit = UnitFrame.unit or unit;
+			if unit == unitID then
+				if powerToken == 'MANA' then
+					return self:UpdatePower();
+				end
 			end
 		end
 		MT.FrameRegisterEvent(extra_power0, "UPDATE_SHAPESHIFT_FORM");
-		MT.FrameRegisterUnitEvent(extra_power0, unit, "UNIT_DISPLAYPOWER", "UNIT_MAXPOWER", "UNIT_POWER_UPDATE", "UNIT_POWER_FREQUENT");
+		MT.FrameRegisterEvent(extra_power0, "UNIT_DISPLAYPOWER", "UNIT_MAXPOWER", "UNIT_POWER_UPDATE", "UNIT_POWER_FREQUENT");
 		extra_power0:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
 		CoverFrame.extra_power0 = extra_power0;
 		CoverFrame.extra_power_restoration_spark = extra_power_restoration_spark;
@@ -1035,11 +1050,12 @@ function MT.CreatePowerRestoration(CoverFrame, unit)	-- TODO timer for different
 	if CoverFrame.CLASS ~= 'DRUID' and CoverFrame.CLASS ~= 'ROGUE' and CoverFrame.CLASS ~= 'HUNTER' and CoverFrame.CLASS ~= 'PALADIN' and CoverFrame.CLASS ~= 'WARLOCK' and CoverFrame.CLASS ~= 'MAGE' and CoverFrame.CLASS ~= 'PRIEST' and CoverFrame.CLASS ~= 'SHAMAN' then
 		return;
 	end
+	local UnitFrame = CoverFrame.UnitFrame;
 	local curPowers = {  };
 	local maxPowers = {  };
 	for powerType = 0, 3 do
-		curPowers[powerType] = UnitPower(unit, powerType);
-		maxPowers[powerType] = UnitPowerMax(unit, powerType);
+		curPowers[powerType] = UnitPower(UnitFrame.unit or unit, powerType);
+		maxPowers[powerType] = UnitPowerMax(UnitFrame.unit or unit, powerType);
 	end
 	-- CoverFrame.power = { MANA = { wait = 5.0, cycle = 2.0, }, ENERGY = { wait = nil, cycle = 2.0, }, };
 	local power0_restoration_wait = 5.0;
@@ -1089,6 +1105,7 @@ function MT.CreatePowerRestoration(CoverFrame, unit)	-- TODO timer for different
 		end
 	end);
 	function CoverFrame:UPDATE_SHAPESHIFT_FORM(event)
+		local unit = UnitFrame.unit or unit;
 		-- UnitPowerType(unit)
 		-- _1	     0,      1,       2,        3,
 		-- _2	'MANA', 'RAGE', 'FOCUS', 'ENERGY',
@@ -1124,89 +1141,98 @@ function MT.CreatePowerRestoration(CoverFrame, unit)	-- TODO timer for different
 			power_restoration_delay5_spark:Hide();
 		end
 	end
-	function CoverFrame:UNIT_SPELLCAST_SUCCEEDED(event, unitId, ...)
-		local curPower0 = UnitPower(unit, 0);
-		if curPower0 < curPowers[0] then
-			self.power_restoration_wait_timer = GetTime() + power0_restoration_wait;
-			if self.powerType == 0 and VT.DB.power_restoration then
-				power_restoration_spark:Show();
-				power_restoration_delay5_spark:Show();
-			end
-		end
-		curPowers[0] = curPower0;
-		local curPower3 = UnitPower(unit);
-		if self.powerType == 3 and VT.DB.power_restoration and curPower3 < maxPowers[3] then
-			power_restoration_spark:Show();
-		end
-		curPowers[3] = curPower3;
-	end
-	function CoverFrame:UNIT_MAXPOWER(event, unitId, powerToken)
-		local powerType = powerToken == 'MANA' and 0 or powerToken == 'ENERGY' and 3;
-		if not powerType then
-			return;
-		end
-		local maxPower = UnitPowerMax(unit, powerType);
-		local curPower = UnitPower(unit, powerType);
-		if maxPower ~= maxPowers[powerType] then
-			if VT.DB.power_restoration and (VT.DB.power_restoration_full or (self.power_restoration_exec and curPower < maxPower)) then
-				power_restoration_spark:Show();
-			else
-				power_restoration_spark:Hide();
-			end
-			maxPowers[powerType] = maxPower;
-			After(GetTickTime(), function() curPowers[powerType] = UnitPower(unit, powerType); end);
-		end
-	end
-	function CoverFrame:UNIT_POWER_FREQUENT(event, unitId, powerToken)
-		if powerToken == 'MANA' then
-			local curPower = UnitPower(unit, 0);
-			if curPower > curPowers[0] then
-				local now =  GetTime();
-				if not self.power_restoration_wait_timer and MT.IsMP5Restoration(self, self.prev_restoration_time ~= nil and min(2, now - self.prev_restoration_time) or 2, curPower - curPowers[0]) then
-					self.power_restoration_time_timer = now + self.power_restoration_time;
-					self.prev_restoration_time = now;
-				elseif curPower >= maxPowers[0] and abs(now - self.power_restoration_time_timer) < 0.1 then
-					self.power_restoration_time_timer = now + self.power_restoration_time;
-					self.prev_restoration_time = now;
+	function CoverFrame:UNIT_SPELLCAST_SUCCEEDED(event, unitID, ...)
+		local unit = UnitFrame.unit or unit;
+		if unit == unitID then
+			local curPower0 = UnitPower(unit, 0);
+			if curPower0 < curPowers[0] then
+				self.power_restoration_wait_timer = GetTime() + power0_restoration_wait;
+				if self.powerType == 0 and VT.DB.power_restoration then
+					power_restoration_spark:Show();
+					power_restoration_delay5_spark:Show();
 				end
-				if self.powerType == 0 and curPower >= maxPowers[0] and not VT.DB.power_restoration_full then
+			end
+			curPowers[0] = curPower0;
+			local curPower3 = UnitPower(unit);
+			if self.powerType == 3 and VT.DB.power_restoration and curPower3 < maxPowers[3] then
+				power_restoration_spark:Show();
+			end
+			curPowers[3] = curPower3;
+		end
+	end
+	function CoverFrame:UNIT_MAXPOWER(event, unitID, powerToken)
+		local unit = UnitFrame.unit or unit;
+		if unit == unitID then
+			local powerType = powerToken == 'MANA' and 0 or powerToken == 'ENERGY' and 3;
+			if not powerType then
+				return;
+			end
+			local maxPower = UnitPowerMax(unit, powerType);
+			local curPower = UnitPower(unit, powerType);
+			if maxPower ~= maxPowers[powerType] then
+				if VT.DB.power_restoration and (VT.DB.power_restoration_full or (self.power_restoration_exec and curPower < maxPower)) then
+					power_restoration_spark:Show();
+				else
 					power_restoration_spark:Hide();
 				end
-				curPowers[0] = curPower;
-			elseif curPower < curPowers[0] then
-				After(GetTickTime(), function() curPowers[0] = UnitPower(unit, 0); end);
-				if VT.DB.power_restoration and curPower < maxPowers[0] then
-					if self.powerType == 0 and not power_restoration_spark:IsShown() then
-						power_restoration_spark:Show();
-						-- curPowers[0] = curPower;
-					end
-				end
+				maxPowers[powerType] = maxPower;
+				After(GetTickTime(), function() curPowers[powerType] = UnitPower(unit, powerType); end);
 			end
-		-- elseif powerToken == 'RAGE' then
-		elseif powerToken == 'ENERGY' then
-			local curPower = UnitPower(unit, 3);
-			if curPower > curPowers[3] then
-				if self.powerType == 3 then
-					if abs((curPower - curPowers[3]) - GetPowerRegen() * self.power_restoration_time) < 0.5 then
-						self.power_restoration_time_timer = GetTime() + self.power_restoration_time;
+		end
+	end
+	function CoverFrame:UNIT_POWER_FREQUENT(event, unitID, powerToken)
+		local unit = UnitFrame.unit or unit;
+		if unit == unitID then
+			if powerToken == 'MANA' then
+				local curPower = UnitPower(unit, 0);
+				if curPower > curPowers[0] then
+					local now =  GetTime();
+					if not self.power_restoration_wait_timer and MT.IsMP5Restoration(self, self.prev_restoration_time ~= nil and min(2, now - self.prev_restoration_time) or 2, curPower - curPowers[0]) then
+						self.power_restoration_time_timer = now + self.power_restoration_time;
+						self.prev_restoration_time = now;
+					elseif curPower >= maxPowers[0] and abs(now - self.power_restoration_time_timer) < 0.1 then
+						self.power_restoration_time_timer = now + self.power_restoration_time;
+						self.prev_restoration_time = now;
 					end
-					if curPower >= maxPowers[3] and not VT.DB.power_restoration_full then
+					if self.powerType == 0 and curPower >= maxPowers[0] and not VT.DB.power_restoration_full then
 						power_restoration_spark:Hide();
 					end
+					curPowers[0] = curPower;
+				elseif curPower < curPowers[0] then
+					After(GetTickTime(), function() curPowers[0] = UnitPower(unit, 0); end);
+					if VT.DB.power_restoration and curPower < maxPowers[0] then
+						if self.powerType == 0 and not power_restoration_spark:IsShown() then
+							power_restoration_spark:Show();
+							-- curPowers[0] = curPower;
+						end
+					end
 				end
-				curPowers[3] = curPower;
+			-- elseif powerToken == 'RAGE' then
+			elseif powerToken == 'ENERGY' then
+				local curPower = UnitPower(unit, 3);
+				if curPower > curPowers[3] then
+					if self.powerType == 3 then
+						if abs((curPower - curPowers[3]) - GetPowerRegen() * self.power_restoration_time) < 0.5 then
+							self.power_restoration_time_timer = GetTime() + self.power_restoration_time;
+						end
+						if curPower >= maxPowers[3] and not VT.DB.power_restoration_full then
+							power_restoration_spark:Hide();
+						end
+					end
+					curPowers[3] = curPower;
+				end
+			else
 			end
-		else
 		end
 	end
 	if CoverFrame.CLASS == "DRUID" then
 		MT.FrameRegisterEvent(CoverFrame, "UPDATE_SHAPESHIFT_FORM");
-		MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_MAXPOWER", "UNIT_POWER_FREQUENT", "UNIT_SPELLCAST_SUCCEEDED");
+		MT.FrameRegisterEvent(CoverFrame, "UNIT_MAXPOWER", "UNIT_POWER_FREQUENT", "UNIT_SPELLCAST_SUCCEEDED");
 	-- 	MT.FrameRegisterEvent(CoverFrame, "UPDATE_STEALTH");
 	-- elseif CoverFrame.CLASS == "ROGUE" then
 	-- 	MT.FrameRegisterEvent(CoverFrame, "UPDATE_STEALTH");
 	else
-		MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_MAXPOWER", "UNIT_POWER_FREQUENT", "UNIT_SPELLCAST_SUCCEEDED");
+		MT.FrameRegisterEvent(CoverFrame, "UNIT_MAXPOWER", "UNIT_POWER_FREQUENT", "UNIT_SPELLCAST_SUCCEEDED");
 	end
 	CoverFrame:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
 	CoverFrame.power_restoration_time_timer = GetTime() + CoverFrame.power_restoration_time;
@@ -1402,7 +1428,7 @@ function MT.CreatePartyAura(CoverFrame, unit)
 		else
 		end
 	end
-	function CoverFrame:UNIT_AURA(event, unitId)
+	function CoverFrame:UNIT_AURA(event, unitID)
 		return self:UpdateAura();
 	end
 	function CoverFrame:HidePartyAura()
@@ -1529,6 +1555,11 @@ function MT.CreatePartyTargetingFrame(CoverFrame, unit, TargetingFramePosition, 
 	function T:UpdateName()
 		Name:SetText(UnitName(target));
 	end
+	function T:UpdatePowerType()
+		local powerType, powerToken = UnitPowerType(target);
+		local color = PowerBarColor[powerType];
+		PBar:SetStatusBarColor(color.r, color.g, color.b, 1.0);
+	end
 	function T:UpdateHealth()
 		local hv, hmv = UnitHealth(unit), UnitHealthMax(unit);
 		-- local hv, hmv = UnitHealth(target), UnitHealthMax(target);
@@ -1551,17 +1582,12 @@ function MT.CreatePartyTargetingFrame(CoverFrame, unit, TargetingFramePosition, 
 			-- PBarPercentage:SetText("");
 		end
 	end
-	function T:UpdatePowerType()
-		local powerType, powerToken = UnitPowerType(target);
-		local color = PowerBarColor[powerType];
-		PBar:SetStatusBarColor(color.r, color.g, color.b, 1.0);
-	end
 	function T:Update()
 		if UnitExists(target) then
-			self:UpdateHealth();
-			self:UpdatePowerType();
-			self:UpdatePower();
 			self:UpdateName();
+			self:UpdatePowerType();
+			self:UpdateHealth();
+			self:UpdatePower();
 			if UnitIsPlayer(target) then
 				local class = UnitClassBase(target);
 				local color = class and RAID_CLASS_COLORS[class];
@@ -1582,8 +1608,8 @@ function MT.CreatePartyTargetingFrame(CoverFrame, unit, TargetingFramePosition, 
 		end
 	end
 
-	function T:UNIT_TARGET(event, unitId)
-		if unit == unitId and VT.DB.partyTarget then
+	function T:UNIT_TARGET(event, unitID)
+		if unit == unitID and VT.DB.partyTarget then
 			return self:Update();
 		end
 	end
@@ -1765,10 +1791,20 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 		CoverFrame.UnitFrameTexture = UnitFrameTexture;
 
 		function CoverFrame:SetCoverBorderTexutre(Texture)
-			self.CoverFrameTexture:SetTexture(Texture);
+			CoverFrameTexture:SetTexture(Texture);
+		end
+		function CoverFrame:CopyBorderTexture()
+			CoverFrameTexture:SetTexture(UnitFrameTexture:GetTexture());
+		end
+		function CoverFrame:HideCoverTexture()
+			CoverFrameTexture:SetTexture(nil);
 		end
 	else
 		function CoverFrame:SetCoverBorderTexutre(Texture)
+		end
+		function CoverFrame:CopyBorderTexture()
+		end
+		function CoverFrame:HideCoverTexture()
 		end
 	end
 
@@ -1812,10 +1848,13 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 				PBarTexture:SetVertexColor(_PBar:GetStatusBarColor());
 			end
 			if FrameDef.BarEventDriven then
-				function CoverFrame:UNIT_DISPLAYPOWER(event, unitId)
-					self:UpdatePowerType();
+				function CoverFrame:UNIT_DISPLAYPOWER(event, unitID)
+					local unit = UnitFrame.unit or unit;
+					if unit == unitID then
+						self:UpdatePowerType();
+					end
 				end
-				MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_DISPLAYPOWER");
+				MT.FrameRegisterEvent(CoverFrame, "UNIT_DISPLAYPOWER");
 			elseif FrameDef.BarEventDriven == false then
 				-- hooksecurefunc(_PBarTexture, "SetVertexColor", function(_, ...)
 				-- 	PBarTexture:SetVertexColor(...);
@@ -1881,15 +1920,9 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 			end
 		end
 
-		function CoverFrame:BarTextAlpha(v)
-			HBarValue:SetAlpha(v);
-			PBarValue:SetAlpha(v);
-			HBarPercentage:SetAlpha(v);
-			PBarPercentage:SetAlpha(v);
-		end
-
 		if FrameDef.BarCoverTexture or FrameDef.BarCreateValue or FrameDef.BarCreatePercentage then
 			function CoverFrame:UpdateHealth()
+				local unit = UnitFrame.unit or unit;
 				local hv, hmv = UnitHealth(unit), UnitHealthMax(unit);
 				if hmv > 0 then
 					if MT.GetConfig(configKey, "HBarValue") then
@@ -1941,22 +1974,31 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 			end
 
 			if FrameDef.BarEventDriven then
-				function CoverFrame:UNIT_HEALTH(event, unitId)
-					return self:UpdateHealth();
+				function CoverFrame:UNIT_HEALTH(event, unitID)
+					local unit = UnitFrame.unit or unit;
+					if unit == unitID then
+						return self:UpdateHealth();
+					end
 				end
-				function CoverFrame:UNIT_MAXHEALTH(event, unitId)
-					return self:UpdateHealth();
+				function CoverFrame:UNIT_MAXHEALTH(event, unitID)
+					local unit = UnitFrame.unit or unit;
+					if unit == unitID then
+						return self:UpdateHealth();
+					end
 				end
-				function CoverFrame:UNIT_POWER_UPDATE(event, unitId)
-					return self:UpdatePower();
+				function CoverFrame:UNIT_POWER_UPDATE(event, unitID)
+					local unit = UnitFrame.unit or unit;
+					if unit == unitID then
+						return self:UpdatePower();
+					end
 				end
-				if pcall(MT.FrameRegisterUnitEvent, CoverFrame, 'player', "UNIT_HEALTH_FREQUENT") then
+				if pcall(MT.FrameRegisterEvent, CoverFrame, "UNIT_HEALTH_FREQUENT") then
 					CoverFrame.UNIT_HEALTH_FREQUENT = CoverFrame.UNIT_HEALTH;
 				else
-					MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_HEALTH");
+					MT.FrameRegisterEvent(CoverFrame, "UNIT_HEALTH");
 				end
-				MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_MAXHEALTH");
-				MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_POWER_UPDATE");
+				MT.FrameRegisterEvent(CoverFrame, "UNIT_MAXHEALTH");
+				MT.FrameRegisterEvent(CoverFrame, "UNIT_POWER_UPDATE");
 			elseif FrameDef.BarEventDriven == false then
 				hooksecurefunc(_HBar, "SetValue", function(self, val)
 					return CoverFrame:UpdateHealth();
@@ -1974,8 +2016,13 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 			end
 			function CoverFrame:UpdatePower()
 			end
-			function CoverFrame:UpdatePowerType()
-			end
+		end
+
+		function CoverFrame:BarTextAlpha(v)
+			HBarValue:SetAlpha(v);
+			PBarValue:SetAlpha(v);
+			HBarPercentage:SetAlpha(v);
+			PBarPercentage:SetAlpha(v);
 		end
 
 		CoverFrame.HBarTexture = HBarTexture;
@@ -1988,11 +2035,11 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 		CoverFrame._PBar = _PBar;
 		CoverFrame.HBColor = HBarTexture;
 	else
+		function CoverFrame:UpdatePowerType()
+		end
 		function CoverFrame:UpdateHealth()
 		end
 		function CoverFrame:UpdatePower()
-		end
-		function CoverFrame:UpdatePowerType()
 		end
 		function CoverFrame:BarTextAlpha(v)
 		end
@@ -2023,6 +2070,7 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 		Portrait3D.bg:SetPoint("CENTER", Portrait3D, "CENTER", 0, 0);
 		function CoverFrame:Update3DPortrait()
 			if MT.GetConfig(configKey, "Portrait3D") then
+				local unit = UnitFrame.unit or unit;
 				if (not UnitIsConnected(unit)) or (not UnitIsVisible(unit)) then
 					-- if not Portrait3D:GetModelFileID() then
 						Portrait3D:Hide();
@@ -2050,23 +2098,13 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 				-- Portrait3D:SetLight(true, LightAlive);
 			end
 		end
-		function CoverFrame:PLAYER_DEAD()
-			Portrait3D:SetLight(true, LightDead);
-		end
-		function CoverFrame:PLAYER_ALIVE()
-			if UnitIsGhost(unit) then
-				Portrait3D:SetLight(true, LightGhost);
-			else
-				Portrait3D:SetLight(true, LightAlive);
+		function CoverFrame:UNIT_MODEL_CHANGED(event, unitID)
+			local unit = UnitFrame.unit or unit;
+			if unit == unitID then
+				self:Update3DPortrait();
 			end
 		end
-		function CoverFrame:PLAYER_UNGHOST()
-			Portrait3D:SetLight(true, LightAlive);
-		end
-		function CoverFrame:UNIT_MODEL_CHANGED()
-			self:Update3DPortrait();
-		end
-		MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_MODEL_CHANGED");
+		MT.FrameRegisterEvent(CoverFrame, "UNIT_MODEL_CHANGED");
 		CoverFrame.Portrait3D = Portrait3D;
 	else
 		function CoverFrame:Update3DPortrait()
@@ -2100,6 +2138,7 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 		Class.Icon:SetAllPoints();
 		if unit == 'player' or unit == 'party1' or unit == 'party2' or unit == 'party3' or unit == 'party4' then
 			function CoverFrame:UpdateClass()
+				local unit = UnitFrame.unit or unit;
 				self.CLASS = UnitClassBase(unit);
 				if self.CLASS and MT.GetConfig(configKey, "Class") then
 					local coord = CLASS_ICON_TCOORDS[self.CLASS];
@@ -2115,6 +2154,7 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 			end
 		else
 			function CoverFrame:UpdateClass()
+				local unit = UnitFrame.unit or unit;
 				if UnitIsPlayer(unit) then
 					self.CLASS = UnitClassBase(unit);
 				else
@@ -2139,10 +2179,12 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 	else
 		if unit == 'player' or unit == 'party1' or unit == 'party2' or unit == 'party3' or unit == 'party4' then
 			function CoverFrame:UpdateClass()
+				local unit = UnitFrame.unit or unit;
 				self.CLASS = UnitClassBase(unit);
 			end
 		else
 			function CoverFrame:UpdateClass()
+				local unit = UnitFrame.unit or unit;
 				if UnitIsPlayer(unit) then
 					self.CLASS = UnitClassBase(unit);
 				else
@@ -2156,18 +2198,11 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 
 	-- ABOVE		name of object must be equal to its config key
 
-	if FrameDef.CreateTargetingFrame then
-		CoverFrame.target = MT.CreatePartyTargetingFrame(CoverFrame, unit, TargetingFramePosition, FrameDef.TargetingFrameOffset);
-	end
-
-	if FrameDef.CreateAura then
-		MT.CreatePartyAura(CoverFrame, unit);
-	end
-
 	MT.UnitFrames[unit] = UnitFrame;
 	MT.CoverFrames[unit] = CoverFrame;
 
 	function CoverFrame:UpdateLevel()
+		local unit = UnitFrame.unit or unit;
 		self.LEVEL = UnitLevel(unit);
 		if self.LevelText then
 			self.LevelText:SetText(self.LEVEL);
@@ -2393,16 +2428,46 @@ function MT.InitPlayerFrame()
 		BarTextFontSize = nil,
 		Create3DPortrait = true,
 		CreateClass = true,
-		CreateTargetingFrame = nil,
-		TargetingFramePosition = "RIGHT",
-		CreateAura = nil,
 		SubLayerLevelOffset = nil,
 	};
 	local CoverFrame = MT.HookUnitFrame(PlayerFrame, 'player', FrameDef);
-	function CoverFrame.PLAYER_LEVEL_CHANGED(self, event, old, new)
+	function CoverFrame:PLAYER_LEVEL_CHANGED(event, old, new)
 		self:UpdateLevel();
 	end
 	MT.FrameRegisterEvent(CoverFrame, "PLAYER_LEVEL_CHANGED");
+	function CoverFrame:UNIT_ENTERED_VEHICLE(event, unitID)
+		CoverFrame:UpdatePowerType();
+		CoverFrame:UpdateHealth();
+		CoverFrame:UpdatePower();
+		CoverFrame:Update3DPortrait();
+		CoverFrame:UpdateClass();
+		CoverFrame:UpdateLevel();
+		CoverFrame:HideCoverTexture();
+	end
+	function CoverFrame:UNIT_EXITED_VEHICLE(event, unitID)
+		CoverFrame:UpdatePowerType();
+		CoverFrame:UpdateHealth();
+		CoverFrame:UpdatePower();
+		CoverFrame:Update3DPortrait();
+		CoverFrame:UpdateClass();
+		CoverFrame:UpdateLevel();
+		MT.SetUnitFrameBorder(self, VT.DB.playerTexture);
+	end
+	MT.FrameRegisterUnitEvent(CoverFrame, 'player', "UNIT_ENTERED_VEHICLE", "UNIT_EXITED_VEHICLE");
+	function CoverFrame:PLAYER_DEAD()
+		self.Portrait3D:SetLight(true, LightDead);
+	end
+	function CoverFrame:PLAYER_ALIVE()
+		local unit = UnitFrame.unit or unit;
+		if UnitIsGhost(unit) then
+			self.Portrait3D:SetLight(true, LightGhost);
+		else
+			self.Portrait3D:SetLight(true, LightAlive);
+		end
+	end
+	function CoverFrame:PLAYER_UNGHOST()
+		self.Portrait3D:SetLight(true, LightAlive);
+	end
 	CoverFrame.LevelText = MT.CoverFontString(CoverFrame, PlayerLevelText, "ARTWORK", 1);
 	CoverFrame.HitIndicator = MT.CoverFontString(CoverFrame, PlayerHitIndicator, "OVERLAY", 2);
 	CoverFrame.PVPIcon = MT.CoverTexture(CoverFrame, PlayerPVPIcon, "OVERLAY", 3);
@@ -2468,7 +2533,8 @@ function MT.InitPlayerFrame()
 	CoverFrame.RaidTarget:SetPoint("CENTER", CoverFrame, "TOPLEFT", 73, -14);
 	CoverFrame.RaidTarget:SetTexture([[Interface\TargetingFrame\UI-RaidTargetingIcons]]);
 	function CoverFrame:RAID_TARGET_UPDATE()
-		local index = GetRaidTargetIndex('player');
+		local unit = CoverFrame.unit or 'player';
+		local index = GetRaidTargetIndex(unit);
 		if index == nil then
 			self.RaidTarget:Hide();
 		else
@@ -2494,9 +2560,6 @@ function MT.InitPetFrame()
 		BarTextFontSize = nil,
 		Create3DPortrait = nil,
 		CreateClass = false,
-		CreateTargetingFrame = nil,
-		TargetingFramePosition = "RIGHT",
-		CreateAura = nil,
 		SubLayerLevelOffset = nil,
 	};
 	local CoverFrame = MT.HookUnitFrame(PetFrame, 'pet', FrameDef);
@@ -2523,9 +2586,6 @@ function MT.InitTargetFrame()
 		BarTextFontSize = nil,
 		Create3DPortrait = true,
 		CreateClass = true,
-		CreateTargetingFrame = nil,
-		TargetingFramePosition = "RIGHT",
-		CreateAura = nil,
 		SubLayerLevelOffset = nil,
 	};
 	local CoverFrame = MT.HookUnitFrame(TargetFrame, 'target', FrameDef);
@@ -2549,7 +2609,7 @@ function MT.InitTargetFrame()
 			self:Update3DPortrait();
 		end
 	end
-	function CoverFrame:UNIT_LEVEL(event, unitId)
+	function CoverFrame:UNIT_LEVEL(event, unitID)
 		self:UpdateLevel();
 	end
 	MT.FrameRegisterUnitEvent(CoverFrame, 'target', "UNIT_LEVEL");
@@ -2585,31 +2645,28 @@ function MT.InitToTFrame()
 		BarTextFontSize = nil,
 		Create3DPortrait = nil,
 		CreateClass = false,
-		CreateTargetingFrame = true,
-		TargetingFrameOffset = 90,
-		TargetingFramePosition = "RIGHT",
-		CreateAura = nil,
 		SubLayerLevelOffset = 2,
 	};
 	local CoverFrame = MT.HookUnitFrame(TargetFrameToT, 'targettarget', FrameDef);
+	CoverFrame.target = MT.CreatePartyTargetingFrame(CoverFrame, 'targettarget', "RIGHT", 90);
 	CoverFrame.update_timer = 0.0;
 	CoverFrame:SetScript("OnUpdate", function(self, elasped)
 		self.update_timer = self.update_timer + elasped;
 		if self.update_timer >= TARGET_UPDATE_INTERVAL then
 			self.update_timer = self.update_timer - TARGET_UPDATE_INTERVAL;
 			if UnitExists('targettarget') then
+				self:UpdatePowerType();
 				self:UpdateHealth();
 				self:UpdatePower();
-				self:UpdatePowerType();
 			end
 		end
 	end);
 	CoverFrame:SetScript("OnShow", function(self)
+		self:UpdatePowerType();
 		self:UpdateHealth();
 		self:UpdatePower();
-		self:UpdatePowerType();
 	end);
-	function CoverFrame:UNIT_TARGET(event, unitId)
+	function CoverFrame:UNIT_TARGET(event, unitID)
 		self:UpdatePowerType();
 	end
 	MT.FrameRegisterUnitEvent(CoverFrame, 'target', "UNIT_TARGET");
@@ -2636,9 +2693,6 @@ function MT.InitFocusFrame()
 		BarTextFontSize = nil,
 		Create3DPortrait = true,
 		CreateClass = true,
-		CreateTargetingFrame = nil,
-		TargetingFramePosition = "RIGHT",
-		CreateAura = nil,
 		SubLayerLevelOffset = nil,
 	};
 	local CoverFrame = MT.HookUnitFrame(FocusFrame, 'focus', FrameDef);
@@ -2662,7 +2716,7 @@ function MT.InitFocusFrame()
 			self:Update3DPortrait();
 		end
 	end
-	function CoverFrame:UNIT_LEVEL(event, unitId)
+	function CoverFrame:UNIT_LEVEL(event, unitID)
 		self:UpdateLevel();
 	end
 	MT.FrameRegisterUnitEvent(CoverFrame, 'focus', "UNIT_LEVEL");
@@ -2696,9 +2750,6 @@ function MT.InitToFFrame()
 		BarTextFontSize = nil,
 		Create3DPortrait = nil,
 		CreateClass = false,
-		CreateTargetingFrame = nil,
-		TargetingFramePosition = "RIGHT",
-		CreateAura = nil,
 		SubLayerLevelOffset = 2,
 	};
 	local CoverFrame = MT.HookUnitFrame(FocusFrameToT, 'focustarget', FrameDef);
@@ -2708,18 +2759,18 @@ function MT.InitToFFrame()
 		if self.update_timer >= TARGET_UPDATE_INTERVAL then
 			self.update_timer = self.update_timer - TARGET_UPDATE_INTERVAL;
 			if UnitExists('focustarget') then
+				self:UpdatePowerType();
 				self:UpdateHealth();
 				self:UpdatePower();
-				self:UpdatePowerType();
 			end
 		end
 	end);
 	CoverFrame:SetScript("OnShow", function(self)
+		self:UpdatePowerType();
 		self:UpdateHealth();
 		self:UpdatePower();
-		self:UpdatePowerType();
 	end);
-	function CoverFrame:UNIT_TARGET(event, unitId)
+	function CoverFrame:UNIT_TARGET(event, unitID)
 		self:UpdatePowerType();
 	end
 	MT.FrameRegisterUnitEvent(CoverFrame, 'focus', "UNIT_TARGET");
@@ -2746,20 +2797,16 @@ function MT.InitPartyFrames()
 		BarTextFontScale = 1.0,
 		Create3DPortrait = true,
 		CreateClass = true,
-		CreateTargetingFrame = true,
-		TargetingFrameOffset = 50,
-		TargetingFramePosition = "RIGHT",
-		CreateAura = true,
 		SubLayerLevelOffset = nil,
 	};
 	local function GROUP_ROSTER_UPDATE(self, event, ...)
 		After(0.1, function()
 			self:UpdatePowerType();
-			self:UpdateClass();
-			self:UpdateLevel();
 			self:UpdateHealth();
 			self:UpdatePower();
 			self:Update3DPortrait();
+			self:UpdateClass();
+			self:UpdateLevel();
 			self:UpdateAura();
 			self:RAID_TARGET_UPDATE();
 		end);
@@ -2800,6 +2847,8 @@ function MT.InitPartyFrames()
 	for i = 1, 4 do
 		local unit = 'party' .. i;
 		local CoverFrame = MT.HookUnitFrame(_G["PartyMemberFrame" .. i], unit, FrameDef);
+		CoverFrame.target = MT.CreatePartyTargetingFrame(CoverFrame, unit, "RIGHT", 50);
+		MT.CreatePartyAura(CoverFrame, unit);
 		CoverFrame.Class:SetScale(0.7);
 		CoverFrame.Class:ClearAllPoints();
 		CoverFrame.Class:SetPoint("TOPLEFT", 40, 2);
