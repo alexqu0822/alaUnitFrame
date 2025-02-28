@@ -228,7 +228,7 @@ function MT.GetHealthColor(val, maxVal)
 	return r, g, 0.0;
 end
 
-function MT.AttachClassicCastBar(UniFrame, castBar, hPos, vOfs, hOfs, width, height, iconPos)
+function MT.AttachClassicCastBar(UnitFrame, castBar, hPos, vOfs, hOfs, width, height, iconPos)
 	if VT.DB.castBar then
 	-- if IsAddOnLoaded("ClassicCastbars") then
 		_G.ClassicCastbarsDB = _G.ClassicCastbarsDB or {  };
@@ -271,7 +271,7 @@ function MT.AttachClassicCastBar(UniFrame, castBar, hPos, vOfs, hOfs, width, hei
 			["position"] = {
 				"CENTER",
 				vOfs,
-				UniFrame:GetHeight() / 2 + height / 2 + hOfs,
+				UnitFrame:GetHeight() / 2 + height / 2 + hOfs,
 			},
 			["height"] = height,
 			["statusBackgroundColor"] = {
@@ -299,7 +299,7 @@ function MT.ResetClassicCastBar()
 		end
 	end
 end
-function MT.AttachCastBar(UniFrame, CastBar, hPos, vOfs, hOfs, width, height, iconPos)
+function MT.AttachCastBar(UnitFrame, CastBar, hPos, vOfs, hOfs, width, height, iconPos)
 	local name = CastBar:GetName();
 	if not VT.DB[name] then
 		VT.DB[name] = {  };
@@ -353,11 +353,11 @@ function MT.AttachCastBar(UniFrame, CastBar, hPos, vOfs, hOfs, width, height, ic
 	CastBar:_ClearAllPoints();
 	-- CastBar.Spark:SetTexCoord(0.0, 1.0, 11 / 32, 20 / 32);
 	-- if hPos == "TOP" then
-		CastBar:_SetPoint("BOTTOM", UniFrame, "TOP", vOfs, hOfs);
-		--CastBar:_SetPoint("BOTTOMRIGHT", UniFrame, "TOPRIGHT", 0, hOfs);
+		CastBar:_SetPoint("BOTTOM", UnitFrame, "TOP", vOfs, hOfs);
+		--CastBar:_SetPoint("BOTTOMRIGHT", UnitFrame, "TOPRIGHT", 0, hOfs);
 	-- elseif hPos == "DOWN" then
-	-- 	CastBar:_SetPoint("TOPLEFT", UniFrame, "BOTTOMLEFT", 0, -hOfs);
-	-- 	CastBar:_SetPoint("TOPRIGHT", UniFrame, "BOTTOMRIGHT", 0, -hOfs);
+	-- 	CastBar:_SetPoint("TOPLEFT", UnitFrame, "BOTTOMLEFT", 0, -hOfs);
+	-- 	CastBar:_SetPoint("TOPRIGHT", UnitFrame, "BOTTOMRIGHT", 0, -hOfs);
 	-- end
 end
 function MT.ResetCastBar(CastBar)
@@ -381,9 +381,9 @@ function MT.CreateExtraPower0(CoverFrame, unit, PortraitPosition)
 	if CoverFrame.CLASS ~= "DRUID" then
 		return;
 	end
-	local UniFrame = CoverFrame.UniFrame;
-	local UnitFrameName = UniFrame:GetName();
-	local _PBar = UniFrame.manabar or (UnitFrameName and _G[UnitFrameName .. "ManaBar"]);
+	local UnitFrame = CoverFrame.UnitFrame;
+	local UnitFrameName = UnitFrame:GetName();
+	local _PBar = UnitFrame.manabar or (UnitFrameName and _G[UnitFrameName .. "ManaBar"]);
 	local configKey = CoverFrame.configKey;
 	if _PBar then
 		-- CoverFrame.extra_power0_frame = CreateFrame("FRAME", nil, CoverFrame);
@@ -1475,7 +1475,7 @@ function MT.CreatePartyTargetingFrame(CoverFrame, unit, TargetingFramePosition, 
 	T:RegisterForClicks("AnyUp")
 	T:SetAttribute("*type1", "target");
 	T:SetAttribute("*type2", "togglemenu");
-	local UnitFrameName = CoverFrame.UniFrame:GetName();
+	local UnitFrameName = CoverFrame.UnitFrame:GetName();
 	if TargetingFramePosition == "LEFT" then
 		if CoverFrame._HBar and CoverFrame._PBar then
 			T:SetPoint("TOPRIGHT", CoverFrame._HBar, "TOPLEFT", -Offset, 0);
@@ -1702,32 +1702,32 @@ end
 local LightAlive = { omnidirectional = false, point = CreateVector3D(0, 0, 0), ambientIntensity = 1.0, ambientColor = CreateColor(1, 1, 1), };
 local LightDead = { omnidirectional = false, point = CreateVector3D(0, 0, 0), ambientIntensity = 1.0, ambientColor = CreateColor(1, 0.3, 0.3), };
 local LightGhost = { omnidirectional = false, point = CreateVector3D(0, 0, 0), ambientIntensity = 1.0, ambientColor = CreateColor(0.25, 0.25, 0.25), };
-function MT.HookUnitFrame(UniFrame, unit, FrameDef)
+function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 	local configKey = strmatch(unit, "^([^0-9]+)%d*");
 	if not configKey then
 		return;
 	end
 	MT.BuildConfig(configKey);
 
-	local CoverFrame = CreateFrame("FRAME", nil, UniFrame);
+	local CoverFrame = CreateFrame("FRAME", nil, UnitFrame);
 	CoverFrame:ClearAllPoints();
-	CoverFrame:SetPoint("TOPLEFT", UniFrame, 0, 0);
-	CoverFrame:SetPoint("BOTTOMRIGHT", UniFrame, 0, 0);
-	CoverFrame:SetFrameLevel(UniFrame:GetFrameLevel() + 128);
+	CoverFrame:SetPoint("TOPLEFT", UnitFrame, 0, 0);
+	CoverFrame:SetPoint("BOTTOMRIGHT", UnitFrame, 0, 0);
+	CoverFrame:SetFrameLevel(UnitFrame:GetFrameLevel() + 128);
 	CoverFrame:EnableMouse(false);
-	CoverFrame:SetFrameStrata(UniFrame:GetFrameStrata());
+	CoverFrame:SetFrameStrata(UnitFrame:GetFrameStrata());
 	CoverFrame:Show();
-	CoverFrame.UniFrame = UniFrame;
+	CoverFrame.UnitFrame = UnitFrame;
 	CoverFrame.unit = unit;
 	CoverFrame.configKey = configKey;
 
 	local PortraitPosition = FrameDef.PortraitPosition;
 	local SubLayerLevelOffset = FrameDef.SubLayerLevelOffset or 0;
 
-	local UnitFrameName = UniFrame:GetName();
-	local UnitFrameTexture = UniFrame.texture or (UnitFrameName and _G[UnitFrameName .. "Texture"]);
+	local UnitFrameName = UnitFrame:GetName();
+	local UnitFrameTexture = UnitFrame.texture or (UnitFrameName and _G[UnitFrameName .. "Texture"]);
 	if not UnitFrameTexture then
-		local UnitFrameTextureFrame = UniFrame.textureFrame or (UnitFrameName and _G[UnitFrameName .. "TextureFrame"]);
+		local UnitFrameTextureFrame = UnitFrame.textureFrame or (UnitFrameName and _G[UnitFrameName .. "TextureFrame"]);
 		if UnitFrameTextureFrame then
 			UnitFrameTexture = UnitFrameTextureFrame.texture or _G[UnitFrameTextureFrame:GetName() .. "Texture"];
 		end
@@ -1736,18 +1736,18 @@ function MT.HookUnitFrame(UniFrame, unit, FrameDef)
 		local FrameTextureCoord = FrameDef.FrameTextureCoord;
 		local CoverFrameTexture = CoverFrame:CreateTexture(nil, "ARTWORK", nil, 4 + SubLayerLevelOffset);
 		CoverFrameTexture:SetTexture(UnitFrameTexture:GetTexture());
-		--[=[local w = UniFrame:GetWidth() * ratio;
+		--[=[local w = UnitFrame:GetWidth() * ratio;
 		w = w - w % 1.0;
 		if PortraitPosition == "LEFT" then
 			CoverFrameTexture:SetPoint("TOPRIGHT", UnitFrameTexture);
 			CoverFrameTexture:SetPoint("BOTTOMRIGHT", UnitFrameTexture);
 			CoverFrameTexture:SetWidth(w);
-			CoverFrameTexture:SetTexCoord(FrameTextureCoord[1] + (FrameTextureCoord[2] - FrameTextureCoord[1]) * (1 - w / UniFrame:GetWidth()), FrameTextureCoord[2], FrameTextureCoord[3], FrameTextureCoord[4]);
+			CoverFrameTexture:SetTexCoord(FrameTextureCoord[1] + (FrameTextureCoord[2] - FrameTextureCoord[1]) * (1 - w / UnitFrame:GetWidth()), FrameTextureCoord[2], FrameTextureCoord[3], FrameTextureCoord[4]);
 		else
 			CoverFrameTexture:SetPoint("TOPLEFT", UnitFrameTexture);
 			CoverFrameTexture:SetPoint("BOTTOMLEFT", UnitFrameTexture);
 			CoverFrameTexture:SetWidth(w);
-			CoverFrameTexture:SetTexCoord(FrameTextureCoord[1], FrameTextureCoord[2] - (FrameTextureCoord[2] - FrameTextureCoord[1]) * (1 - w / UniFrame:GetWidth()), FrameTextureCoord[3], FrameTextureCoord[4]);
+			CoverFrameTexture:SetTexCoord(FrameTextureCoord[1], FrameTextureCoord[2] - (FrameTextureCoord[2] - FrameTextureCoord[1]) * (1 - w / UnitFrame:GetWidth()), FrameTextureCoord[3], FrameTextureCoord[4]);
 		end--]=]
 		CoverFrameTexture:SetPoint("CENTER", UnitFrameTexture);
 		CoverFrameTexture:SetSize(UnitFrameTexture:GetSize());
@@ -1774,8 +1774,8 @@ function MT.HookUnitFrame(UniFrame, unit, FrameDef)
 
 	-- BELOW		name of object must be equal to its config key
 
-	local _HBar = UniFrame.healthbar or (UnitFrameName and _G[UnitFrameName .. "HealthBar"]);
-	local _PBar = UniFrame.manabar or (UnitFrameName and _G[UnitFrameName .. "ManaBar"]);
+	local _HBar = UnitFrame.healthbar or (UnitFrameName and _G[UnitFrameName .. "HealthBar"]);
+	local _PBar = UnitFrame.manabar or (UnitFrameName and _G[UnitFrameName .. "ManaBar"]);
 
 	if _HBar and _PBar then
 		local HBarTexture, PBarTexture, HBarValue, PBarValue, HBarPercentage, PBarPercentage = _VirtualWidget, _VirtualWidget, _VirtualWidget, _VirtualWidget, _VirtualWidget, _VirtualWidget;
@@ -2007,13 +2007,13 @@ function MT.HookUnitFrame(UniFrame, unit, FrameDef)
 		-- CoverFrame.HBColor = _VirtualWidget;
 	end
 
-	local Portrait2D = UniFrame.portrait or _G[UnitFrameName .. "Portrait"];
+	local Portrait2D = UnitFrame.portrait or _G[UnitFrameName .. "Portrait"];
 	if FrameDef.Create3DPortrait and Portrait2D then
 		local w, h = Portrait2D:GetSize();
 		local Portrait3D = CreateFrame("PLAYERMODEL", nil, CoverFrame);
 		Portrait3D:SetWidth(w * 0.75);
 		Portrait3D:SetHeight(h * 0.75);
-		Portrait3D:SetFrameLevel(UniFrame:GetFrameLevel() + 16);
+		Portrait3D:SetFrameLevel(UnitFrame:GetFrameLevel() + 16);
 		Portrait3D:ClearAllPoints();
 		Portrait3D:SetPoint("CENTER", Portrait2D, "CENTER", 0, -1);
 		Portrait3D.bg = Portrait3D:CreateTexture(nil, "BACKGROUND", nil, 7);
@@ -2180,7 +2180,7 @@ function MT.HookUnitFrame(UniFrame, unit, FrameDef)
 	end
 	function CoverFrame:ApplyScale()
 		local v = MT.GetConfig(configKey, 'Scale');
-		UniFrame:SetScale(v);
+		UnitFrame:SetScale(v);
 	end
 	function CoverFrame:Scale()
 		MT.RunAfterCombat(self.ApplyScale);
