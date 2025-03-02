@@ -2136,60 +2136,37 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 		Class.Icon = Class:CreateTexture(nil, "ARTWORK", nil, SubLayerLevelOffset);
 		Class.Icon:SetTexture("Interface\\WorldStateFrame\\Icons-Classes");
 		Class.Icon:SetAllPoints();
-		if unit == 'player' or unit == 'party1' or unit == 'party2' or unit == 'party3' or unit == 'party4' then
-			function CoverFrame:UpdateClass()
-				local unit = UnitFrame.unit or unit;
+		function CoverFrame:UpdateClass()
+			self._CLASS = UnitClassBase(unit);
+			local unit = UnitFrame.unit or unit;
+			if UnitIsPlayer(unit) then
 				self.CLASS = UnitClassBase(unit);
-				if self.CLASS and MT.GetConfig(configKey, "Class") then
-					local coord = CLASS_ICON_TCOORDS[self.CLASS];
-					if coord then
-						Class.Icon:SetTexCoord(coord[1], coord[2], coord[3], coord[4]);
-						Class:Show();
-					else
-						Class:Hide();
-					end
-				else
-					Class:Hide();
-				end
+			else
+				self.CLASS = nil;
 			end
-		else
-			function CoverFrame:UpdateClass()
-				local unit = UnitFrame.unit or unit;
-				if UnitIsPlayer(unit) then
-					self.CLASS = UnitClassBase(unit);
-				else
-					self.CLASS = nil;
-				end
-				if self.CLASS and MT.GetConfig(configKey, "Class") then
-					local coord = CLASS_ICON_TCOORDS[self.CLASS];
-					if coord then
-						Class.Icon:SetTexCoord(coord[1], coord[2], coord[3], coord[4]);
-						Class:Show();
-					else
-						Class:Hide();
-					end
+			if self.CLASS and MT.GetConfig(configKey, "Class") then
+				local coord = CLASS_ICON_TCOORDS[self.CLASS];
+				if coord then
+					Class.Icon:SetTexCoord(coord[1], coord[2], coord[3], coord[4]);
+					Class:Show();
 				else
 					Class:Hide();
 				end
+			else
+				Class:Hide();
 			end
 		end
 		CoverFrame:UpdateClass();
 
 		CoverFrame.Class = Class;
 	else
-		if unit == 'player' or unit == 'party1' or unit == 'party2' or unit == 'party3' or unit == 'party4' then
-			function CoverFrame:UpdateClass()
-				local unit = UnitFrame.unit or unit;
+		function CoverFrame:UpdateClass()
+			self._CLASS = UnitClassBase(unit);
+			local unit = UnitFrame.unit or unit;
+			if UnitIsPlayer(unit) then
 				self.CLASS = UnitClassBase(unit);
-			end
-		else
-			function CoverFrame:UpdateClass()
-				local unit = UnitFrame.unit or unit;
-				if UnitIsPlayer(unit) then
-					self.CLASS = UnitClassBase(unit);
-				else
-					self.CLASS = nil;
-				end
+			else
+				self.CLASS = nil;
 			end
 		end
 
@@ -2454,6 +2431,9 @@ function MT.InitPlayerFrame()
 		MT.SetUnitFrameBorder(self, VT.DB.playerTexture);
 	end
 	MT.FrameRegisterUnitEvent(CoverFrame, 'player', "UNIT_ENTERED_VEHICLE", "UNIT_EXITED_VEHICLE");
+	if UnitInVehicle('player') then
+		CoverFrame:UNIT_ENTERED_VEHICLE("UNIT_ENTERED_VEHICLE", 'player');
+	end
 	function CoverFrame:PLAYER_DEAD()
 		self.Portrait3D:SetLight(true, LightDead);
 	end
