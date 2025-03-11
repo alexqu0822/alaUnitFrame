@@ -28,7 +28,7 @@ local DT = {  }; __private.DT = DT;		--	data
 	if select(4, GetBuildInfo()) >= 20000 then
 		MT.UnitAura = UnitAura;
 	else
-		local LibClassicDurations = LibStub("LibClassicDurations");
+		local LibClassicDurations = LibStub("LibClassicDurations", true);
 		if LibClassicDurations then
 			LibClassicDurations:Register(__addon);
 			function MT.UnitAura(unit, index, filter)
