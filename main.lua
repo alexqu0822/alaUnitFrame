@@ -388,122 +388,122 @@ function MT.CreateExtraPower0(CoverFrame, unit, PortraitPosition)
 	local configKey = CoverFrame.configKey;
 	if _PBar then
 		-- CoverFrame.extra_power0_frame = CreateFrame("FRAME", nil, CoverFrame);
-		local extra_power0 = CreateFrame("STATUSBAR", nil, CoverFrame);
-		extra_power0:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
-		extra_power0:SetStatusBarColor(0.0, 0.0, 1.0, 1.0);
-		extra_power0:SetHeight(_PBar:GetHeight());
-		uireimp._SetBackdrop(extra_power0, {
+		local ExtraPower0 = CreateFrame("STATUSBAR", nil, CoverFrame);
+		ExtraPower0:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
+		ExtraPower0:SetStatusBarColor(0.0, 0.0, 1.0, 1.0);
+		ExtraPower0:SetHeight(_PBar:GetHeight());
+		uireimp._SetBackdrop(ExtraPower0, {
 			bgFile = "Interface/ChatFrame/ChatFrameBackground",
 			edgeFile = "Interface/ChatFrame/ChatFrameBackground",
 			tile = true,
 			edgeSize = 1,
 			tileSize = 5,
 		});
-		uireimp._SetBackdropColor(extra_power0, 0.0, 0.0, 0.0, 0.0);
-		uireimp._SetBackdropBorderColor(extra_power0, 0.0, 0.0, 0.0, 1.0);
-		extra_power0:SetPoint("TOPLEFT", _PBar, "BOTTOMLEFT", 0, -4);
-		extra_power0:SetPoint("TOPRIGHT", _PBar, "BOTTOMRIGHT", 0, -4);
-		extra_power0:Hide();
-		local epVal = extra_power0:CreateFontString(nil, "OVERLAY", "TextStatusBarText");
-		epVal:ClearAllPoints();
-		epVal:Show();
-		local epPer = extra_power0:CreateFontString(nil, "OVERLAY", "TextStatusBarText");
-		epPer:ClearAllPoints();
-		epVal:SetPoint("CENTER", extra_power0);
+		uireimp._SetBackdropColor(ExtraPower0, 0.0, 0.0, 0.0, 0.0);
+		uireimp._SetBackdropBorderColor(ExtraPower0, 0.0, 0.0, 0.0, 1.0);
+		ExtraPower0:SetPoint("TOPLEFT", _PBar, "BOTTOMLEFT", 0, -4);
+		ExtraPower0:SetPoint("TOPRIGHT", _PBar, "BOTTOMRIGHT", 0, -4);
+		ExtraPower0:Hide();
+		ExtraPower0.Value = ExtraPower0:CreateFontString(nil, "OVERLAY", "TextStatusBarText");
+		ExtraPower0.Value:ClearAllPoints();
+		ExtraPower0.Value:Show();
+		ExtraPower0.Percentage = ExtraPower0:CreateFontString(nil, "OVERLAY", "TextStatusBarText");
+		ExtraPower0.Percentage:ClearAllPoints();
+		ExtraPower0.Value:SetPoint("CENTER", ExtraPower0);
 		if PortraitPosition == "LEFT" then
-			epPer:SetPoint("LEFT", extra_power0, "RIGHT", 4, 0);
+			ExtraPower0.Percentage:SetPoint("LEFT", ExtraPower0, "RIGHT", 4, 0);
 		else
-			epPer:SetPoint("RIGHT", extra_power0, "LEFT", -4, 0);
+			ExtraPower0.Percentage:SetPoint("RIGHT", ExtraPower0, "LEFT", -4, 0);
 		end
 		if VT.IsVanilla or VT.IsTBC then
-			local extra_power_restoration_spark = extra_power0:CreateTexture(nil, "OVERLAY", nil, 7);
-			extra_power_restoration_spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark");
-			extra_power_restoration_spark:SetPoint("CENTER", extra_power0, "LEFT");
-			extra_power_restoration_spark:SetWidth(10);
-			extra_power_restoration_spark:SetBlendMode("ADD");
-			extra_power_restoration_spark:Hide();
-			local extra_power_restoration_delay5_spark = CoverFrame:CreateTexture(nil, "OVERLAY", nil, 7);
-			extra_power_restoration_delay5_spark:SetTexture("Interface\\CastingBar\\ui-castingbar-sparkred");
-			extra_power_restoration_delay5_spark:SetPoint("CENTER", CoverFrame._PBar, "LEFT");
-			extra_power_restoration_delay5_spark:SetWidth(15);
-			extra_power_restoration_delay5_spark:SetBlendMode("ADD");
-			extra_power_restoration_delay5_spark:Hide();
-			extra_power0:SetScript("OnUpdate", function(self)
-				if extra_power_restoration_spark:IsShown() then
+			ExtraPower0.RestorationSpark = ExtraPower0:CreateTexture(nil, "OVERLAY", nil, 7);
+			ExtraPower0.RestorationSpark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark");
+			ExtraPower0.RestorationSpark:SetPoint("CENTER", ExtraPower0, "LEFT");
+			ExtraPower0.RestorationSpark:SetWidth(10);
+			ExtraPower0.RestorationSpark:SetBlendMode("ADD");
+			ExtraPower0.RestorationSpark:Hide();
+			ExtraPower0.RestorationDelay5Spark = CoverFrame:CreateTexture(nil, "OVERLAY", nil, 7);
+			ExtraPower0.RestorationDelay5Spark:SetTexture("Interface\\CastingBar\\ui-castingbar-sparkred");
+			ExtraPower0.RestorationDelay5Spark:SetPoint("CENTER", CoverFrame._PBar, "LEFT");
+			ExtraPower0.RestorationDelay5Spark:SetWidth(15);
+			ExtraPower0.RestorationDelay5Spark:SetBlendMode("ADD");
+			ExtraPower0.RestorationDelay5Spark:Hide();
+			ExtraPower0:SetScript("OnUpdate", function(self)
+				if ExtraPower0.RestorationSpark:IsShown() then
 					local now = GetTime();
 					if CoverFrame.power_restoration_wait_timer then
-						extra_power_restoration_delay5_spark:Show();
-						extra_power_restoration_delay5_spark:ClearAllPoints();
-						extra_power_restoration_delay5_spark:SetPoint("CENTER", self, "LEFT", self:GetWidth() * (CoverFrame.power_restoration_wait_timer - now) / 5.0, 0);
+						ExtraPower0.RestorationDelay5Spark:Show();
+						ExtraPower0.RestorationDelay5Spark:ClearAllPoints();
+						ExtraPower0.RestorationDelay5Spark:SetPoint("CENTER", self, "LEFT", self:GetWidth() * (CoverFrame.power_restoration_wait_timer - now) / 5.0, 0);
 					else
-						extra_power_restoration_delay5_spark:Hide();
+						ExtraPower0.RestorationDelay5Spark:Hide();
 					end
 					if CoverFrame.power_restoration_time_timer then
-						extra_power_restoration_spark:ClearAllPoints();
-						extra_power_restoration_spark:SetPoint("CENTER", self, "RIGHT", - self:GetWidth() * (CoverFrame.power_restoration_time_timer - now) / CoverFrame.power_restoration_time, 0);
+						ExtraPower0.RestorationSpark:ClearAllPoints();
+						ExtraPower0.RestorationSpark:SetPoint("CENTER", self, "RIGHT", - self:GetWidth() * (CoverFrame.power_restoration_time_timer - now) / CoverFrame.power_restoration_time, 0);
 					end
 				end
 			end);
 			if CoverFrame.LEVEL < 10 then
-				-- extra_power_restoration_spark:SetAlpha(0.0);
+				-- ExtraPower0.RestorationSpark:SetAlpha(0.0);
 			end
 		end
-		function extra_power0:UpdatePower()
+		function ExtraPower0:UpdatePower()
 			local unit = UnitFrame.unit or unit;
 			local pv, pmv = UnitPower(unit, 0), UnitPowerMax(unit, 0);
 			self:SetMinMaxValues(0, pmv);
 			self:SetValue(pv);
 			if VT.IsVanilla or VT.IsTBC then
 				if VT.DB.power_restoration and (VT.DB.power_restoration_full or pv < pmv) then
-					extra_power_restoration_spark:Show();
+					ExtraPower0.RestorationSpark:Show();
 				else
-					extra_power_restoration_spark:Hide();
+					ExtraPower0.RestorationSpark:Hide();
 				end
 				if VT.DB.power_restoration and CoverFrame.power_restoration_wait_timer then
-					extra_power_restoration_delay5_spark:Show();
+					ExtraPower0.RestorationDelay5Spark:Show();
 				else
-					extra_power_restoration_delay5_spark:Hide();
+					ExtraPower0.RestorationDelay5Spark:Hide();
 				end
 			end
 			if MT.GetConfig(configKey, "PBarValue") then
-				epVal:SetText(pv .. " / " .. pmv);
-				epVal:Show();
+				ExtraPower0.Value:SetText(pv .. " / " .. pmv);
+				ExtraPower0.Value:Show();
 			else
-				epVal:Hide();
+				ExtraPower0.Value:Hide();
 			end
 			if MT.GetConfig(configKey, "PBarPercentage") then
-				epPer:SetText(MT.GetPercentageText(pv, pmv));
-				epPer:Show();
+				ExtraPower0.Percentage:SetText(MT.GetPercentageText(pv, pmv));
+				ExtraPower0.Percentage:Show();
 			else
-				epPer:Hide();
+				ExtraPower0.Percentage:Hide();
 			end
 		end
-		function extra_power0:UpdatePowerMax()
+		function ExtraPower0:UpdatePowerMax()
 			return self:UpdatePower();
 		end
-		function extra_power0:UPDATE_SHAPESHIFT_FORM(event)
+		function ExtraPower0:UPDATE_SHAPESHIFT_FORM(event)
 			local unit = UnitFrame.unit or unit;
 			local powerType, powerToken = UnitPowerType(unit);
 			if powerType == 0 then
 				self:Hide();
-			elseif VT.DB.extra_power0 then
+			elseif VT.DB.ExtraPower0 then
 				self:Show();
 				return self:UpdatePowerMax();
 			end
 		end
-		function extra_power0:UNIT_DISPLAYPOWER(event, unitID)
+		function ExtraPower0:UNIT_DISPLAYPOWER(event, unitID)
 			local unit = UnitFrame.unit or unit;
 			if unit == unitID then
 				local powerType, powerToken = UnitPowerType(unit);
 				if powerType == 0 then
 					self:Hide();
-				elseif VT.DB.extra_power0 then
+				elseif VT.DB.ExtraPower0 then
 					self:Show();
 					return self:UpdatePowerMax();
 				end
 			end
 		end
-		function extra_power0:UNIT_MAXPOWER(event, unitID, powerToken)
+		function ExtraPower0:UNIT_MAXPOWER(event, unitID, powerToken)
 			local unit = UnitFrame.unit or unit;
 			if unit == unitID then
 				if powerToken == 'MANA' then
@@ -512,7 +512,7 @@ function MT.CreateExtraPower0(CoverFrame, unit, PortraitPosition)
 				end
 			end
 		end
-		function extra_power0:UNIT_POWER_UPDATE(event, unitID, powerToken)
+		function ExtraPower0:UNIT_POWER_UPDATE(event, unitID, powerToken)
 			local unit = UnitFrame.unit or unit;
 			if unit == unitID then
 				if powerToken == 'MANA' then
@@ -520,7 +520,7 @@ function MT.CreateExtraPower0(CoverFrame, unit, PortraitPosition)
 				end
 			end
 		end
-		function extra_power0:UNIT_POWER_FREQUENT(event, unitID, powerToken)
+		function ExtraPower0:UNIT_POWER_FREQUENT(event, unitID, powerToken)
 			local unit = UnitFrame.unit or unit;
 			if unit == unitID then
 				if powerToken == 'MANA' then
@@ -528,14 +528,10 @@ function MT.CreateExtraPower0(CoverFrame, unit, PortraitPosition)
 				end
 			end
 		end
-		MT.FrameRegisterEvent(extra_power0, "UPDATE_SHAPESHIFT_FORM");
-		MT.FrameRegisterEvent(extra_power0, "UNIT_DISPLAYPOWER", "UNIT_MAXPOWER", "UNIT_POWER_UPDATE", "UNIT_POWER_FREQUENT");
-		extra_power0:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
-		CoverFrame.extra_power0 = extra_power0;
-		CoverFrame.extra_power_restoration_spark = extra_power_restoration_spark;
-		CoverFrame.extra_power_restoration_delay5_spark = extra_power_restoration_delay5_spark;
-		CoverFrame.epVal = epVal;
-		CoverFrame.epPer = epPer;
+		MT.FrameRegisterEvent(ExtraPower0, "UPDATE_SHAPESHIFT_FORM");
+		MT.FrameRegisterEvent(ExtraPower0, "UNIT_DISPLAYPOWER", "UNIT_MAXPOWER", "UNIT_POWER_UPDATE", "UNIT_POWER_FREQUENT");
+		ExtraPower0:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
+		CoverFrame.ExtraPower0 = ExtraPower0;
 	end
 end
 function MT.ToggleExtraPower0()
@@ -544,10 +540,10 @@ function MT.ToggleExtraPower0()
 	if CoverFrame.CLASS ~= "DRUID" then
 		return;
 	end
-	if VT.DB.extra_power0 then
-		CoverFrame.extra_power0:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
+	if VT.DB.ExtraPower0 then
+		CoverFrame.ExtraPower0:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
 	else
-		CoverFrame.extra_power0:Hide();
+		CoverFrame.ExtraPower0:Hide();
 	end
 end
 
@@ -1258,15 +1254,15 @@ function MT.TogglePowerRestoration()
 	if VT.DB.power_restoration then
 		CoverFrame.powerType = nil;
 		CoverFrame:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
-		if CoverFrame.extra_power0 then
-			CoverFrame.extra_power0:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
+		if CoverFrame.ExtraPower0 then
+			CoverFrame.ExtraPower0:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
 		end
 	else
 		CoverFrame.power_restoration_spark:Hide();
 		CoverFrame.power_restoration_delay5_spark:Hide();
-		if CoverFrame.extra_power0 then
-			CoverFrame.extra_power_restoration_spark:Hide();
-			CoverFrame.extra_power_restoration_delay5_spark:Hide();
+		if CoverFrame.ExtraPower0 then
+			CoverFrame.ExtraPower0.RestorationSpark:Hide();
+			CoverFrame.ExtraPower0.RestorationDelay5Spark:Hide();
 		end
 	end
 end
@@ -1282,8 +1278,8 @@ function MT.TogglePowerRestorationFull()
 	end
 	CoverFrame.powerType = nil;
 	CoverFrame:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
-	if CoverFrame.extra_power0 then
-		CoverFrame.extra_power0:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
+	if CoverFrame.ExtraPower0 then
+		CoverFrame.ExtraPower0:UPDATE_SHAPESHIFT_FORM("UPDATE_SHAPESHIFT_FORM");
 	end
 end
 
