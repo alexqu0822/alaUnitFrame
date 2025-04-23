@@ -2,10 +2,10 @@
 ..\FrameXML\UI.xsd">
 
     <script file="LibStub\LibStub.lua"/>
-    <Include file="CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
-    <!-- <Include file="LibClassicMobHealthGuid-1.0\lib.xml"/> -->
-    <Include file="LibClassicDurations\LibClassicDurations.xml"/>
-    <!-- <Include file="LibThreatClassic2\lib.xml"/> -->
+    <include file="CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
+    <!-- <include file="LibClassicMobHealthGuid-1.0\lib.xml"/> -->
+    <include file="LibClassicDurations\LibClassicDurations.xml"/>
+    <!-- <include file="LibThreatClassic2\lib.xml"/> -->
     <include file = "ala\main.xml" />
 
 
