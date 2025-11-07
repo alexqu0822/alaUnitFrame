@@ -2467,9 +2467,7 @@ function MT.InitPlayerFrame()
 	CoverFrame.CombatStatus:SetSize(PlayerFrameTexture:GetSize());
 	CoverFrame.CombatStatus:SetPoint("CENTER", PlayerFrameTexture);
 	CoverFrame.CombatStatus:SetTexture("interface\\targetingframe\\ui-targetingframe-flash");
-	if VT.IsWrath or VT.IsTBC or VT.IsVanilla then
-		CoverFrame.CombatStatus:SetTexCoord(1.0, 0.09375, 0.0, 0.78125 / 4);
-	end
+	CoverFrame.CombatStatus:SetTexCoord(1.0, 0.09375, 0.0, 0.78125 / 4);
 	CoverFrame.CombatStatus:Hide();
 	CoverFrame.CombatStatus:SetVertexColor(1.0, 0.0, 0.0, 1.0);
 	if InCombatLockdown() then

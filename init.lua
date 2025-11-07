@@ -10,6 +10,7 @@ local VT = {  }; __private.VT = VT;		--	variables
 local DT = {  }; __private.DT = DT;		--	data
 
 -->
+	VT.IsMists = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC;			--	19
 	VT.IsCata = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC;		--	14
 	VT.IsWrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC;			--	11
 	VT.IsTBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC;	--	5
@@ -21,7 +22,7 @@ local DT = {  }; __private.DT = DT;		--	data
 	local tinsert, tremove = table.insert, table.remove;
 	local InCombatLockdown = InCombatLockdown;
 
-	if not VT.IsCata and not VT.IsWrath and not VT.IsTBC and not VT.IsVanilla then
+	if not VT.IsMists and not VT.IsCata and not VT.IsWrath and not VT.IsTBC and not VT.IsVanilla then
 		VT.UnsupportedClient = true;
 		return;
 	end

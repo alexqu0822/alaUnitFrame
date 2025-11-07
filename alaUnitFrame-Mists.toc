@@ -1,4 +1,4 @@
-## Interface: 40402
+## Interface: 50501, 50502
 ## Title: ala's UnitFrame
 ## Title-zhCN: ala单位框架
 ## Title-zhTW: ala單位框架
