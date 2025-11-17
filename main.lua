@@ -407,8 +407,10 @@ function MT.CreateExtraPower0(CoverFrame, unit, PortraitPosition)
 		ExtraPower0.Value = ExtraPower0:CreateFontString(nil, "OVERLAY", "TextStatusBarText");
 		ExtraPower0.Value:ClearAllPoints();
 		ExtraPower0.Value:Show();
+		CoverFrame.Texts[ExtraPower0.Value] = "ExtraPower0.Value";
 		ExtraPower0.Percentage = ExtraPower0:CreateFontString(nil, "OVERLAY", "TextStatusBarText");
 		ExtraPower0.Percentage:ClearAllPoints();
+		CoverFrame.Texts[ExtraPower0.Percentage] = "ExtraPower0.Percentage";
 		ExtraPower0.Value:SetPoint("CENTER", ExtraPower0);
 		if PortraitPosition == "LEFT" then
 			ExtraPower0.Percentage:SetPoint("LEFT", ExtraPower0, "RIGHT", 4, 0);
@@ -1414,11 +1416,11 @@ function MT.CreatePartyAura(CoverFrame, unit)
 				debuffs[1]:ClearAllPoints();
 				debuffs[1]:SetPoint("TOPLEFT", self, "TOPLEFT", ofs_x, ofs_y);
 			end
-			if VT.IsCata or VT.IsWrath or VT.IsTBC then
+			if not VT.IsVanilla and not VT.IsRetail then
 				self.CastingBar:SetPoint("TOP", debuffs[1], "BOTTOM", 0, -2);
 			end
 		elseif buffs[1] ~= nil then
-			if VT.IsCata or VT.IsWrath or VT.IsTBC then
+			if not VT.IsVanilla and not VT.IsRetail then
 				self.CastingBar:SetPoint("TOP", buffs[1], "BOTTOM", 0, -2);
 			end
 		else
@@ -1519,6 +1521,7 @@ function MT.CreatePartyTargetingFrame(CoverFrame, unit, TargetingFramePosition, 
 	Name:SetFont(GameFontNormal:GetFont(), 13, "OUTLINE");
 	Name:SetPoint("BOTTOM", T, "TOP", 0, 2);
 	T.Name = Name;
+	CoverFrame.Texts[T.Name] = "Target.Name";
 	local PBarHeight = h * 0.33;
 	PBarHeight = PBarHeight - PBarHeight % 1.0;
 	local HBarHeight = h - PBarHeight;
@@ -1721,6 +1724,34 @@ function MT._Secure_ToggleShiftFocus()
 	end
 end
 
+function MT.AbbrValue(which, val)
+	if MT.GetConfig(which, "UseAbbr") then
+		if MT.GetConfig(which, "UseAbbrW") then
+			if val >= 1000000000000 then
+				return format("%.1fZ", val * 0.000000000001);
+			elseif val >= 100000000 then
+				return format("%.1fY", val * 0.00000001);
+			elseif val >= 10000 then
+				return format("%.1fW", val * 0.0001);
+			else
+				return val;
+			end
+		else
+			if val >= 1000000000000 then
+				return format("%.1fT", val * 0.000000000001);
+			elseif val >= 1000000000 then
+				return format("%.1fG", val * 0.000000001);
+			elseif val >= 1000000 then
+				return format("%.1fM", val * 0.000001);
+			elseif val >= 1000 then
+				return format("%.1fK", val * 0.001);
+			else
+				return val;
+			end
+		end
+	end
+	return val;
+end
 local LightAlive = { omnidirectional = false, point = CreateVector3D(0, 0, 0), ambientIntensity = 1.0, ambientColor = CreateColor(1, 1, 1), };
 local LightDead = { omnidirectional = false, point = CreateVector3D(0, 0, 0), ambientIntensity = 1.0, ambientColor = CreateColor(1, 0.3, 0.3), };
 local LightGhost = { omnidirectional = false, point = CreateVector3D(0, 0, 0), ambientIntensity = 1.0, ambientColor = CreateColor(0.25, 0.25, 0.25), };
@@ -1742,6 +1773,8 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 	CoverFrame.UnitFrame = UnitFrame;
 	CoverFrame.unit = unit;
 	CoverFrame.configKey = configKey;
+	local Texts = {  };
+	CoverFrame.Texts = Texts;
 
 	local PortraitPosition = FrameDef.PortraitPosition;
 	local SubLayerLevelOffset = FrameDef.SubLayerLevelOffset or 0;
@@ -1873,11 +1906,13 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 			HBarValue:SetScale(BarTextFontScale);
 			HBarValue:ClearAllPoints();
 			HBarValue:Show();
+			Texts[HBarValue] = "HBarValue";
 			PBarValue = CoverFrame:CreateFontString(nil, "OVERLAY", nil, 7);
 			PBarValue:SetFont(TextStatusBarText:GetFont(), BarTextFontSize, "OUTLINE");
 			PBarValue:SetScale(BarTextFontScale);
 			PBarValue:ClearAllPoints();
 			PBarValue:Show();
+			Texts[PBarValue] = "PBarValue";
 			if BarValuePosition then
 				if PortraitPosition == "LEFT" then
 					HBarValue:SetPoint("LEFT", _HBar, "RIGHT", BarValuePosition, 0);
@@ -1901,10 +1936,12 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 			HBarPercentage:SetFont(TextStatusBarText:GetFont(), BarTextFontSize, "OUTLINE");
 			HBarPercentage:SetScale(BarTextFontScale);
 			HBarPercentage:Show();
+			Texts[HBarPercentage] = "HBarPercentage";
 			PBarPercentage = CoverFrame:CreateFontString(nil, "OVERLAY", nil, 7);
 			PBarPercentage:SetFont(TextStatusBarText:GetFont(), BarTextFontSize, "OUTLINE");
 			PBarPercentage:SetScale(BarTextFontScale);
 			PBarPercentage:Show();
+			Texts[PBarPercentage] = "PBarPercentage";
 			HBarPercentage:ClearAllPoints();
 			PBarPercentage:ClearAllPoints();
 			if PortraitPosition == "LEFT" then
@@ -1922,7 +1959,7 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 				local hv, hmv = UnitHealth(unit), UnitHealthMax(unit);
 				if hmv > 0 then
 					if MT.GetConfig(configKey, "HBarValue") then
-						HBarValue:SetText(hv .. " / " .. hmv);
+						HBarValue:SetText(MT.AbbrValue(configKey, hv) .. " / " .. MT.AbbrValue(configKey, hmv));
 						HBarValue:Show();
 					else
 						HBarValue:Hide();
@@ -1951,7 +1988,7 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 				if pmv > 0 then
 					PBarTexture:SetVertexColor(_PBar:GetStatusBarColor());
 					if MT.GetConfig(configKey, "PBarValue") then
-						PBarValue:SetText(pv .. " / " .. pmv);
+						PBarValue:SetText(MT.AbbrValue(configKey, pv) .. " / " .. MT.AbbrValue(configKey, pmv));
 						PBarValue:Show();
 					else
 						PBarValue:Hide();
@@ -2030,6 +2067,8 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 		CoverFrame._HBar = _HBar;
 		CoverFrame._PBar = _PBar;
 		CoverFrame.HBColor = HBarTexture;
+		CoverFrame.UseAbbr = _VirtualWidget;
+		CoverFrame.UseAbbrW = _VirtualWidget
 	else
 		function CoverFrame:UpdatePowerType()
 		end
@@ -2193,6 +2232,12 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 	function CoverFrame:Scale()
 		MT.RunAfterCombat(self.ApplyScale);
 	end
+	function CoverFrame:TextScale()
+		local v = MT.GetConfig(configKey, 'TextScale');
+		for Text, Note in next, CoverFrame.Texts do
+			Text:SetScale(v);
+		end
+	end
 
 	CoverFrame:UpdateClass();
 
@@ -2274,6 +2319,7 @@ function MT.CreateThreatBar(CoverFrame, ppos, point, relPoint, x, y)
 	Value:SetFont(TextStatusBarText:GetFont(), 13, "OUTLINE");
 	Value:SetPoint(ppos);
 	Threat.Value = Value;
+	CoverFrame.Texts[Threat.Value] = "Threat.Value";
 	Threat.update_timer = THREAT_UPDATE_INTERVAL;
 	Threat:SetScript("OnUpdate", function(self, elasped)
 		self.update_timer = self.update_timer + elasped;
@@ -2348,9 +2394,23 @@ function MT.CreateThreatBar(CoverFrame, ppos, point, relPoint, x, y)
 		self.__update = true;
 	end);
 	Threat:RegisterEvent("UNIT_THREAT_LIST_UPDATE");
+	function Threat:Toggle(val)
+		if val ~= false and val ~= 0 then
+			Threat:Show();
+			Threat.__update = true;
+		else
+			Threat:Hide();
+		end
+	end
+	Threat:Toggle(VT.DB.Threat);
+	MT.ThreatBars[CoverFrame] = Threat;
 	return Threat;
 end
-
+function MT.ToggleThreat()
+	for CoverFrame, Threat in next, MT.ThreatBars do
+		Threat:Toggle(VT.DB.Threat);
+	end
+end
 
 function MT._Secure_SetUnitFramesDefaultPosition()
 	if not TargetFrame:IsUserPlaced() then
@@ -2445,7 +2505,9 @@ function MT.InitPlayerFrame()
 		self.Portrait3D:SetLight(true, LightAlive);
 	end
 	CoverFrame.LevelText = MT.CoverFontString(CoverFrame, PlayerLevelText, "ARTWORK", 1);
+	CoverFrame.Texts[CoverFrame.LevelText] = "LevelText";
 	CoverFrame.HitIndicator = MT.CoverFontString(CoverFrame, PlayerHitIndicator, "OVERLAY", 2);
+	CoverFrame.Texts[CoverFrame.HitIndicator] = "HitIndicator";
 	CoverFrame.PVPIcon = MT.CoverTexture(CoverFrame, PlayerPVPIcon, "OVERLAY", 3);
 	CoverFrame.LeaderIcon = MT.CoverTexture(CoverFrame, PlayerLeaderIcon, "OVERLAY", 4);
 	CoverFrame.MasterIcon = MT.CoverTexture(CoverFrame, PlayerMasterIcon, "OVERLAY", 4);
@@ -2538,7 +2600,7 @@ function MT.InitPetFrame()
 	};
 	local CoverFrame = MT.HookUnitFrame(PetFrame, 'pet', FrameDef);
 	CoverFrame.PBarTexture:Hide();
-	if VT.IsCata or VT.IsWrath or VT.IsTBC then
+	if not VT.IsVanilla and not VT.IsRetail then
 		MT.SecureHideLayer(PetFrameHealthBarText);
 		MT.SecureHideLayer(PetFrameHealthBarTextLeft);
 		MT.SecureHideLayer(PetFrameHealthBarTextRight);
@@ -2588,11 +2650,12 @@ function MT.InitTargetFrame()
 	end
 	MT.FrameRegisterUnitEvent(CoverFrame, 'target', "UNIT_LEVEL");
 	CoverFrame.LevelText = MT.CoverFontString(CoverFrame, TargetFrameTextureFrameLevelText, "OVERLAY", 6);
+	CoverFrame.Texts[CoverFrame.LevelText] = "LevelText";
 	CoverFrame.HighLevelTexture = MT.CoverTexture(CoverFrame, TargetFrameTextureFrameHighLevelTexture, "OVERLAY", 7);
 	CoverFrame.PVPIcon = MT.CoverTexture(CoverFrame, TargetFrameTextureFramePVPIcon, "OVERLAY");
 	CoverFrame.LeaderIcon = MT.CoverTexture(CoverFrame, TargetFrameTextureFrameLeaderIcon, "OVERLAY");
 	CoverFrame.RaidTargetIcon = MT.CoverTexture(CoverFrame, TargetFrameTextureFrameRaidTargetIcon, "OVERLAY");
-	if VT.IsCata or VT.IsWrath or VT.IsTBC then
+	if not VT.IsVanilla and not VT.IsRetail then
 		MT.SecureHideLayer(TargetFrameTextureFrame.HealthBarText);
 		MT.SecureHideLayer(TargetFrameTextureFrame.HealthBarTextLeft);
 		MT.SecureHideLayer(TargetFrameTextureFrame.HealthBarTextRight);
@@ -2695,6 +2758,7 @@ function MT.InitFocusFrame()
 	end
 	MT.FrameRegisterUnitEvent(CoverFrame, 'focus', "UNIT_LEVEL");
 	CoverFrame.LevelText = MT.CoverFontString(CoverFrame, FocusFrameTextureFrameLevelText, "OVERLAY", 6);
+	CoverFrame.Texts[CoverFrame.LevelText] = "LevelText";
 	CoverFrame.HighLevelTexture = MT.CoverTexture(CoverFrame, FocusFrameTextureFrameHighLevelTexture, "OVERLAY", 7);
 	CoverFrame.PVPIcon = MT.CoverTexture(CoverFrame, FocusFrameTextureFramePVPIcon, "OVERLAY");
 	CoverFrame.LeaderIcon = MT.CoverTexture(CoverFrame, FocusFrameTextureFrameLeaderIcon, "OVERLAY");
@@ -2835,6 +2899,7 @@ function MT.InitPartyFrames()
 		MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_NAME_UPDATE");
 		MT.FrameRegisterEvent(CoverFrame, "RAID_TARGET_UPDATE");
 		CoverFrame.Name = MT.CoverFontString(CoverFrame, _G["PartyMemberFrame" .. i .. "Name"], "OVERLAY", 6, nil, nil, false, nil, false, false);
+		CoverFrame.Texts[CoverFrame.Name] = "Name";
 		CoverFrame.NameBG = CoverFrame:CreateTexture(nil, "BACKGROUND");
 		CoverFrame.NameBG:SetPoint("TOPLEFT", CoverFrame.Name, "TOPLEFT", -2, 0);
 		CoverFrame.NameBG:SetPoint("BOTTOMRIGHT", CoverFrame.Name, "BOTTOMRIGHT", 2, 0);
@@ -2854,6 +2919,7 @@ function MT.InitPartyFrames()
 		CoverFrame.LevelText:SetFont(GameFontNormal:GetFont(), 11, "OUTLINE");
 		CoverFrame.LevelText:SetPoint("CENTER", CoverFrame, "BOTTOMLEFT", 10, 10);
 		CoverFrame.LevelText:Show();
+		CoverFrame.Texts[CoverFrame.LevelText] = "CoverFrame.LevelText";
 		CoverFrame.RaidTarget = CoverFrame:CreateTexture(nil, "OVERLAY");
 		CoverFrame.RaidTarget:SetSize(18, 18);
 		CoverFrame.RaidTarget:SetPoint("TOP", CoverFrame, "TOPLEFT", 26, 4);
@@ -2864,7 +2930,7 @@ function MT.InitPartyFrames()
 		CoverFrame.LeaderIcon = MT.CoverTexture(CoverFrame, _G["PartyMemberFrame" .. i .. "LeaderIcon"], "OVERLAY");
 		CoverFrame.MasterIcon = MT.CoverTexture(CoverFrame, _G["PartyMemberFrame" .. i .. "MasterIcon"], "OVERLAY");
 
-		if VT.IsCata or VT.IsWrath or VT.IsTBC then
+		if not VT.IsVanilla and not VT.IsRetail then
 			local Cast = CreateFrame('STATUSBAR', "PartyMemberFrame" .. i .. "CastingBar", CoverFrame, "SmallCastingBarFrameTemplate");
 			Cast:SetScale(0.8);
 			Cast:SetPoint("LEFT", CoverFrame, "LEFT", 20, 0);
@@ -2893,6 +2959,7 @@ end
 function MT.ApplyFrameSettings()
 	for unit, CoverFrame in next, MT.CoverFrames do
 		CoverFrame:Scale();
+		CoverFrame:TextScale();
 	end
 	MT.SetUnitFrameBorder(MT.CoverFrames['player'], VT.DB.playerTexture);
 	MT.SetUnitFrameBorder(MT.CoverFrames['pet'], 4);
@@ -2901,7 +2968,7 @@ function MT.ApplyFrameSettings()
 	MT.SetUnitFrameBorder(MT.CoverFrames['party2'], 6);
 	MT.SetUnitFrameBorder(MT.CoverFrames['party3'], 6);
 	MT.SetUnitFrameBorder(MT.CoverFrames['party4'], 6);
-	if VT.IsCata or VT.IsWrath or VT.IsTBC then
+	if not VT.IsVanilla and not VT.IsRetail then
 		if VT.DB.castBar then
 			MT.AttachCastBar(PlayerFrame, CastingBarFrame, nil, 32, 20, 160, 32, "RIGHT");
 			--MT.AttachCastBar(TargetFrame, TargetFrameSpellBar, nil, 0, 32, 180, 24, "LEFT");
@@ -2924,7 +2991,7 @@ function MT.ApplyFrameSettings()
 	MT.RunAfterCombat(MT._Secure_TogglePartyTargetingFrame);
 	MT.TogglePartyTargetingFrameStyle();
 	MT.TogglePartyAura();
-	if VT.IsCata or VT.IsWrath or VT.IsTBC then
+	if not VT.IsVanilla and not VT.IsRetail then
 		MT.TogglePartyCastingBar();
 	end
 	MT.RunAfterCombat(MT._Secure_ToggleToTTarget);
@@ -2935,7 +3002,7 @@ function MT.ApplyFrameSettings()
 	-- 	MT.RunAfterCombat(MT._Secure_ResetPlayerFramePosition);
 	-- 	MT.RunAfterCombat(MT._Secure_ResetTargetFramePosition);
 	end
-	if (VT.IsCata or VT.IsWrath or VT.IsTBC) and VT.DB.ShiftFocus then
+	if (not VT.IsVanilla and not VT.IsRetail) and VT.DB.ShiftFocus then
 		MT.RunAfterCombat(MT._Secure_ToggleShiftFocus);
 	end
 

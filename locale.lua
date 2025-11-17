@@ -33,6 +33,7 @@ if CT.LOCALE == 'zhCN' or CT.LOCALE == 'zhTW' then
 	L["playerTexture_3"] = "精英";
 	L["move_castbar_to_top_of_portrait"] = "施法条移动到头像上方";
 	L["ToTTarget"] = "目标的目标的目标";
+	L["Threat"] = "仇恨百分比";
 
 	L["mana_and_energy_regen_indicator"] = "法系五回和贼德能量回复";
 	L["mana_and_energy_regen_indicator_full"] = "满能量时显示法系五回和贼德能量回复\n（所谓走喝）";
@@ -61,6 +62,9 @@ if CT.LOCALE == 'zhCN' or CT.LOCALE == 'zhTW' then
 	L["color_health_bar_by_health_percent"] = "生命条按比例染色";
 	L["BarTextAlpha"] = "数值透明度";
 	L["Scale"] = "缩放";
+	L["TextScale"] = "文本缩放";
+	L["UseAbbr"] = "数值缩写";
+	L["UseAbbrW"] = "以万为单位";
 else
 	L["user_placed"] = "Move player & target frame.";
 	L["x_offset_of_PlayerFrame"] = "x offset of PlayerFrame";
@@ -76,6 +80,7 @@ else
 	L["playerTexture_3"] = "Elite";
 	L["move_castbar_to_top_of_portrait"] = "move castbar";
 	L["ToTTarget"] = "Target of target of target";
+	L["Threat"] = "Threat";
 
 	L["mana_and_energy_regen_indicator"] = "Mana and energy regen indicator";
 	L["mana_and_energy_regen_indicator_full"] = "Mana and energy regen indicator When power is full";
@@ -102,6 +107,9 @@ else
 	L["power_text"] = "Show power text";
 	L["power_percent"] = "Show percent of power";
 	L["color_health_bar_by_health_percent"] = "Color health bar by health percent";
-	L["BarTextAlpha"] = "Alpha of text";
+	L["BarTextAlpha"] = "Text Alpha";
 	L["Scale"] = "Scale";
+	L["TextScale"] = "TextScale";
+	L["UseAbbr"] = "UseAbbr";
+	L["UseAbbrW"] = "Abbr by 10k, otherwise by 1k";
 end

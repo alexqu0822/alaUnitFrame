@@ -64,6 +64,7 @@ CT.DefaultConfig = {
 	playerTexture = 0,
 	castBar = false,
 	ToTTarget = false,
+	Threat = true,
 
 	power_restoration = VT.IsTBC or VT.IsVanilla,
 	power_restoration_full = VT.IsVanilla or VT.IsTBC,
@@ -77,13 +78,15 @@ CT.DefaultConfig = {
 	-- partyTargetH = 24,
 	TargetRetailStyle = false,
 
-	ShiftFocus = VT.IsCata or VT.IsWrath or VT.IsTBC,
+	ShiftFocus = not VT.IsVanilla,
 
 	which = 'general',
 	configKeys = {  };
 	general = {
 		Class = true,
 		Portrait3D = not VT.IsVanilla,
+		UseAbbr = CT.TOCVERSION >= 40000,
+		UseAbbrW = CT.LOCALE == 'zhCN' or CT.LOCALE == 'zhTW',
 		HBarValue = true,
 		HBarPercentage = true,
 		PBarValue = true,
@@ -91,6 +94,7 @@ CT.DefaultConfig = {
 		HBColor = true,
 		BarTextAlpha = 1.0,
 		Scale = 1.0,
+		TextScale = 1.0,
 	},
 
 };
@@ -102,23 +106,17 @@ ConfigFrame.subCheckBox = {  };
 ConfigFrame.subSlider = {  };
 ConfigFrame:Hide();
 local col_width = 300;
-local row_height = 32;
+local row_height = 30;
 
 local function SliderOnValue(self, value)
-	if self.key == "BarTextAlpha" or self.key == "Scale" then
+	if self.key == "BarTextAlpha" or self.key == "Scale" or self.key == "TextScale" then
 		MT.SetConfigValue(VT.DB.which or 'general', self.key, value);
 	end
 end
 local function SliderRefresh(self)
-	if self.key == "BarTextAlpha" then
-		local value = MT.GetConfig(VT.DB.which or 'general', self.key);
-		self:SetValue(value);
-		self.valueBox:SetText(value);
-	elseif self.key == "Scale" then
-		local value = MT.GetConfig(VT.DB.which or 'general', self.key);
-		self:SetValue(value);
-		self.valueBox:SetText(value);
-	end
+	local value = MT.GetConfig(VT.DB.which or 'general', self.key);
+	self:SetValue(value);
+	self.valueBox:SetText(value);
 end
 local function SliderOnValueChanged(self, value, userInput)
 	local value = floor(value / self.stepSize + 0.5) * self.stepSize;
@@ -160,7 +158,7 @@ local function CreateSlider(specific, key, label_text, minRange, maxRange, stepS
 	slider.key = key;
 
 	slider:ClearAllPoints();
-	slider:SetPoint("LEFT", label, "RIGHT", 4, 0);
+	slider:SetPoint("BOTTOMLEFT", label, "RIGHT", 12, 0);
 	slider:SetWidth(160);
 	slider:SetHeight(20);
 
@@ -263,12 +261,12 @@ local function CreateDrop(specific, key, labelText, i, j, data)
 	return drop;
 end
 local function CheckButtonOnClick(self)
-	local on = self:GetChecked();
 	local key = self.key;
+	local val = self:GetChecked();
 	if key then
 		if key == "playerPlaced" then
-			VT.DB[key] = on;
-			if on then
+			VT.DB[key] = val;
+			if val then
 				MT.RunAfterCombat(MT._Secure_SetPlayerFramePosition);
 				MT.RunAfterCombat(MT._Secure_SetTargetFramePosition);
 			else
@@ -276,7 +274,7 @@ local function CheckButtonOnClick(self)
 				MT.RunAfterCombat(MT._Secure_ResetTargetFramePosition);
 			end
 		elseif key == "dark" then
-			VT.DB[key] = on;
+			VT.DB[key] = val;
 			MT.SetUnitFrameBorder(MT.CoverFrames['player'], VT.DB.playerTexture);
 			MT.CoverFrames['target']:PLAYER_TARGET_CHANGED();
 			MT.SetUnitFrameBorder(MT.CoverFrames['pet'], 4);
@@ -286,9 +284,9 @@ local function CheckButtonOnClick(self)
 			MT.SetUnitFrameBorder(MT.CoverFrames['party3'], 6);
 			MT.SetUnitFrameBorder(MT.CoverFrames['party4'], 6);
 		elseif key == "castBar" then
-			if VT.IsCata or VT.IsWrath or VT.IsTBC then
-				VT.DB[key] = on;
-				if on then
+			if not VT.IsVanilla and not VT.IsRetail then
+				VT.DB[key] = val;
+				if val then
 					MT.AttachCastBar(PlayerFrame, CastingBarFrame, nil, 32, 20, 160, 32, "RIGHT");
 					if IsAddOnLoaded("ClassicCastbars") then
 						MT.AttachClassicCastBar(TargetFrame, nil, nil, - 32, 20, 160, 32, "LEFT");
@@ -300,36 +298,39 @@ local function CheckButtonOnClick(self)
 				end
 			end
 		elseif key == "power_restoration" then
-			VT.DB[key] = on;
+			VT.DB[key] = val;
 			MT.TogglePowerRestoration();
 		elseif key == "power_restoration_full" then
-			VT.DB[key] = on;
+			VT.DB[key] = val;
 			MT.TogglePowerRestorationFull();
 		elseif key == "extra_power0" then
-			VT.DB[key] = on;
+			VT.DB[key] = val;
 			MT.ToggleExtraPower0();
 		elseif key == "partyTarget" then
-			VT.DB[key] = on;
+			VT.DB[key] = val;
 			MT.RunAfterCombat(MT._Secure_TogglePartyTargetingFrame);
 		elseif key == "TargetRetailStyle" then
-			VT.DB[key] = on;
+			VT.DB[key] = val;
 			MT.TogglePartyTargetingFrameStyle();
 		elseif key == "partyAura" then
-			VT.DB[key] = on;
+			VT.DB[key] = val;
 			MT.TogglePartyAura();
 		elseif key == "partyCast" then
-			if VT.IsCata or VT.IsWrath or VT.IsTBC then
-				VT.DB[key] = on;
+			if not VT.IsVanilla and not VT.IsRetail then
+				VT.DB[key] = val;
 				MT.TogglePartyCastingBar();
 			end
 		elseif key == "ToTTarget" then
-			VT.DB[key] = on;
+			VT.DB[key] = val;
 			MT.RunAfterCombat(MT._Secure_ToggleToTTarget);
+		elseif key == "Threat" then
+			VT.DB[key] = val;
+			MT.ToggleThreat();
 		elseif key == "ShiftFocus" then
-			VT.DB[key] = on;
+			VT.DB[key] = val;
 			MT.RunAfterCombat(MT._Secure_ToggleShiftFocus);
 		else
-			MT.SetConfigBoolean(VT.DB.which or 'general', key, on);
+			MT.SetConfigBoolean(VT.DB.which or 'general', key, val);
 		end
 	end
 end
@@ -433,25 +434,26 @@ function MT.InitConfigFrame()
 		{ 3, L["playerTexture_3"], },
 	});
 	CreateCheckBox(false, "castBar", L["move_castbar_to_top_of_portrait"], 1, 5);
-	CreateCheckBox(false, "ToTTarget", L["ToTTarget"], 2, 5);
+	CreateCheckBox(false, "ToTTarget", L["ToTTarget"], 1, 6);
+	CreateCheckBox(false, "Threat", L["Threat"], 2, 6);
 
 	if VT.IsVanilla or VT.IsTBC then
-		CreateCheckBox(false, "power_restoration", L["mana_and_energy_regen_indicator"], 1, 6);
-		CreateCheckBox(false, "power_restoration_full", L["mana_and_energy_regen_indicator_full"], 2, 6);
+		CreateCheckBox(false, "power_restoration", L["mana_and_energy_regen_indicator"], 1, 7);
+		CreateCheckBox(false, "power_restoration_full", L["mana_and_energy_regen_indicator_full"], 2, 7);
 	end
-	CreateCheckBox(false, "extra_power0", L["mana_for_druid"], 1, 7);
-	CreateCheckBox(false, "partyTarget", L["target_of_party_member"], 1, 8);
-	CreateCheckBox(false, "TargetRetailStyle", L["target_is_retail_style"], 2, 8);
+	CreateCheckBox(false, "extra_power0", L["mana_for_druid"], 1, 8);
+	CreateCheckBox(false, "partyTarget", L["target_of_party_member"], 1, 9);
+	CreateCheckBox(false, "TargetRetailStyle", L["target_is_retail_style"], 2, 9);
 
-	CreateCheckBox(false, "partyAura", L["party_aura"], 1, 9);
-	if VT.IsCata or VT.IsWrath or VT.IsTBC then
-		CreateCheckBox(false, "partyCast", L["party_cast"], 2, 9);
+	CreateCheckBox(false, "partyAura", L["party_aura"], 1, 10);
+	if not VT.IsVanilla and not VT.IsRetail then
+		CreateCheckBox(false, "partyCast", L["party_cast"], 2, 10);
 	end
-	if VT.IsCata or VT.IsWrath or VT.IsTBC then
-		CreateCheckBox(false, "ShiftFocus", L["ShiftFocus"], 1, 10);
+	if not VT.IsVanilla and not VT.IsRetail then
+		CreateCheckBox(false, "ShiftFocus", L["ShiftFocus"], 1, 11);
 	end
 
-	local sub_menu_start = 11;
+	local sub_menu_start = 12;
 	CreateDrop(false, "which", L["which_frame"], 1, sub_menu_start, {
 		{ 'general', L["General"], },
 		{ 'player', L["PlayerFrame"], },
@@ -461,15 +463,18 @@ function MT.InitConfigFrame()
 		{ 'party', L["Party"], },
 		-- { 'boss', L["BOSS"], },
 	});
-	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "Class", L["class_icon"], 1, sub_menu_start + 1));
-	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "Portrait3D", L["Portrait3D"], 2, sub_menu_start + 1));
-	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "HBarValue", L["health_text"], 1, sub_menu_start + 2));
-	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "HBarPercentage", L["health_percent"], 2, sub_menu_start + 2));
-	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "HBColor", L["color_health_bar_by_health_percent"], 1, sub_menu_start + 3));
-	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "PBarValue", L["power_text"], 1, sub_menu_start + 4));
-	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "PBarPercentage", L["power_percent"], 2, sub_menu_start + 4));
-	tinsert(ConfigFrame.subSlider, CreateSlider(true, "BarTextAlpha", L["BarTextAlpha"], 0.0, 1.0, 0.05, 1, sub_menu_start + 5));
-	tinsert(ConfigFrame.subSlider, CreateSlider(true, "Scale", L["Scale"], 0.5, 2.0, 0.05, 1, sub_menu_start + 6));
+	tinsert(ConfigFrame.subSlider, CreateSlider(true, "Scale", L["Scale"], 0.5, 2.0, 0.05, 1, sub_menu_start + 1));
+	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "Class", L["class_icon"], 1, sub_menu_start + 2));
+	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "Portrait3D", L["Portrait3D"], 2, sub_menu_start + 2));
+	tinsert(ConfigFrame.subSlider, CreateSlider(true, "TextScale", L["TextScale"], 0.5, 2.0, 0.05, 2, sub_menu_start + 3));
+	tinsert(ConfigFrame.subSlider, CreateSlider(true, "BarTextAlpha", L["BarTextAlpha"], 0.0, 1.0, 0.05, 1, sub_menu_start + 3));
+	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "UseAbbr", L["UseAbbr"], 1, sub_menu_start + 4));
+	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "UseAbbrW", L["UseAbbrW"], 2, sub_menu_start + 4));
+	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "HBarValue", L["health_text"], 1, sub_menu_start + 5));
+	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "HBarPercentage", L["health_percent"], 2, sub_menu_start + 5));
+	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "HBColor", L["color_health_bar_by_health_percent"], 1, sub_menu_start + 6));
+	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "PBarValue", L["power_text"], 1, sub_menu_start + 7));
+	tinsert(ConfigFrame.subCheckBox, CreateCheckBox(true, "PBarPercentage", L["power_percent"], 2, sub_menu_start + 7));
 
 	InterfaceOptions_AddCategory(ConfigFrame);
 end

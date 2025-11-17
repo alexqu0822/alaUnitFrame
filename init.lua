@@ -10,6 +10,7 @@ local VT = {  }; __private.VT = VT;		--	variables
 local DT = {  }; __private.DT = DT;		--	data
 
 -->
+	CT.CLIENTVERSION, CT.BUILDNUMBER, CT.BUILDDATE, CT.TOCVERSION = GetBuildInfo();
 	VT.IsMists = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC;			--	19
 	VT.IsCata = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC;		--	14
 	VT.IsWrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC;			--	11
@@ -26,7 +27,7 @@ local DT = {  }; __private.DT = DT;		--	data
 		VT.UnsupportedClient = true;
 		return;
 	end
-	if select(4, GetBuildInfo()) >= 20000 then
+	if CT.TOCVERSION >= 20000 then
 		MT.UnitAura = UnitAura;
 	else
 		local LibClassicDurations = LibStub("LibClassicDurations", true);
@@ -45,6 +46,7 @@ local DT = {  }; __private.DT = DT;		--	data
 -->
 	MT.CoverFrames = {  };
 	MT.UnitFrames = {  };
+	MT.ThreatBars = {  };
 	MT.CodeAfterCombat = {  };
 
 -->
@@ -66,6 +68,7 @@ function Driver.ADDON_LOADED(self, event, addon)
 	self:UnregisterEvent("ADDON_LOADED");
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 
+	local alaUnitFrameSV = _G.alaUnitFrameSV;
 	if alaUnitFrameSV and alaUnitFrameSV._ver ~= nil and alaUnitFrameSV._ver > 20241201.0 then
 		if alaUnitFrameSV._ver < 20241202.0 then
 			for _, k in next, { 'player', 'pet', 'target', 'targettarget', 'focus', 'focustarget', 'party', 'boss', } do
@@ -82,8 +85,21 @@ function Driver.ADDON_LOADED(self, event, addon)
 				end
 			end
 		end
+		for k, v in next, CT.DefaultConfig do
+			if alaUnitFrameSV[k] == nil or type(v) ~= type(alaUnitFrameSV[k]) then
+				alaUnitFrameSV[k] = v;
+			elseif type(v) == 'table' then
+				local t = alaUnitFrameSV[k];
+				for k2, v2 in next, v do
+					if t[k2] == nil then
+						t[k2] = v2;
+					end
+				end
+			end
+		end
 	else
 		_G.alaUnitFrameSV = CT.DefaultConfig;
+		alaUnitFrameSV = CT.DefaultConfig;
 	end
 	alaUnitFrameSV._ver = 20241202.0;
 	alaUnitFrameSV.__seen = alaUnitFrameSV.__seen or {  };
