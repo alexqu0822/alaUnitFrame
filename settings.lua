@@ -52,6 +52,7 @@ if InterfaceOptionsFrame_OpenToCategory == nil then
 		end
 	end
 end
+local IsAddOnLoaded = IsAddOnLoaded or C_AddOns.IsAddOnLoaded;
 
 
 CT.DefaultConfig = {

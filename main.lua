@@ -49,6 +49,7 @@ local uireimp = __ala_meta__.uireimp;
 	local IsInRaid, IsInGroup = IsInRaid, IsInGroup;
 	local GetNumGroupMembers = GetNumGroupMembers;
 	local GetRaidTargetIndex = GetRaidTargetIndex;
+	local IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded;
 
 	local _ = nil;
 	local _G = _G;
@@ -1025,7 +1026,10 @@ function MT.EstimateMP5(CoverFrame)
 	end
 	return 0.0, 0.0, 0.0;
 end
-function MT.IsMP5Restoration(CoverFrame, interval, diff)
+function MT.IsMP5Restoration(CoverFrame, unit, interval, diff)
+	if UnitLevel(unit) <= 20 then
+		return true;
+	end
 	diff = diff * 2 / interval;
 	local tick, spirit, mp5;
 	-- if CoverFrame.powerType == 0 then
@@ -1185,7 +1189,7 @@ function MT.CreatePowerRestoration(CoverFrame, unit)	-- TODO timer for different
 				local curPower = UnitPower(unit, 0);
 				if curPower > curPowers[0] then
 					local now =  GetTime();
-					if not self.power_restoration_wait_timer and MT.IsMP5Restoration(self, self.prev_restoration_time ~= nil and min(2, now - self.prev_restoration_time) or 2, curPower - curPowers[0]) then
+					if not self.power_restoration_wait_timer and MT.IsMP5Restoration(self, unitID, self.prev_restoration_time ~= nil and min(2, now - self.prev_restoration_time) or 2, curPower - curPowers[0]) then
 						self.power_restoration_time_timer = now + self.power_restoration_time;
 						self.prev_restoration_time = now;
 					elseif curPower >= maxPowers[0] and abs(now - self.power_restoration_time_timer) < 0.1 then
@@ -1444,8 +1448,10 @@ function MT.TogglePartyAura()
 		for i = 1, 4 do
 			for j = 1, 4 do
 				local icon = _G["PartyMemberFrame" .. i .. "Debuff" .. j];
-				icon:EnableMouse(false);
-				icon:SetAlpha(0.0);
+				if icon then
+					icon:EnableMouse(false);
+					icon:SetAlpha(0.0);
+				end
 			end
 		end
 	else
@@ -1456,13 +1462,16 @@ function MT.TogglePartyAura()
 		for i = 1, 4 do
 			for j = 1, 4 do
 				local icon = _G["PartyMemberFrame" .. i .. "Debuff" .. j];
-				icon:EnableMouse(true);
-				icon:SetAlpha(1.0);
+				if icon then
+					icon:EnableMouse(true);
+					icon:SetAlpha(1.0);
+				end
 			end
 		end
 	end
 end
 function MT.TogglePartyCastingBar()
+	do return end
 	if VT.DB.partyCast then
 		for i = 1, 4 do
 			local CastingBar = MT.CoverFrames['party' .. i].CastingBar;
@@ -1697,10 +1706,10 @@ function MT._Secure_ToggleShiftFocus()
 		-- if FocusFrame ~= nil then
 		-- 	FocusFrame:SetAttribute("shift-type1", "focus");
 		-- end
-		PartyMemberFrame1:SetAttribute("shift-type1", "focus");
-		PartyMemberFrame2:SetAttribute("shift-type1", "focus");
-		PartyMemberFrame3:SetAttribute("shift-type1", "focus");
-		PartyMemberFrame4:SetAttribute("shift-type1", "focus");
+		MT.UnitFrames['party1']:SetAttribute("shift-type1", "focus");
+		MT.UnitFrames['party2']:SetAttribute("shift-type1", "focus");
+		MT.UnitFrames['party3']:SetAttribute("shift-type1", "focus");
+		MT.UnitFrames['party4']:SetAttribute("shift-type1", "focus");
 		MT.CoverFrames['party1'].target:SetAttribute("shift-type1", "focus");
 		MT.CoverFrames['party2'].target:SetAttribute("shift-type1", "focus");
 		MT.CoverFrames['party3'].target:SetAttribute("shift-type1", "focus");
@@ -1713,10 +1722,10 @@ function MT._Secure_ToggleShiftFocus()
 		-- if FocusFrame ~= nil then
 		-- 	FocusFrame:SetAttribute("shift-type1", nil);
 		-- end
-		PartyMemberFrame1:SetAttribute("shift-type1", nil);
-		PartyMemberFrame2:SetAttribute("shift-type1", nil);
-		PartyMemberFrame3:SetAttribute("shift-type1", nil);
-		PartyMemberFrame4:SetAttribute("shift-type1", nil);
+		MT.UnitFrames['party1']:SetAttribute("shift-type1", nil);
+		MT.UnitFrames['party2']:SetAttribute("shift-type1", nil);
+		MT.UnitFrames['party3']:SetAttribute("shift-type1", nil);
+		MT.UnitFrames['party4']:SetAttribute("shift-type1", nil);
 		MT.CoverFrames['party1'].target:SetAttribute("shift-type1", nil);
 		MT.CoverFrames['party2'].target:SetAttribute("shift-type1", nil);
 		MT.CoverFrames['party3'].target:SetAttribute("shift-type1", nil);
@@ -1780,7 +1789,7 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 	local SubLayerLevelOffset = FrameDef.SubLayerLevelOffset or 0;
 
 	local UnitFrameName = UnitFrame:GetName();
-	local UnitFrameTexture = UnitFrame.texture or (UnitFrameName and _G[UnitFrameName .. "Texture"]);
+	local UnitFrameTexture = FrameDef._Texture or UnitFrame.texture or (UnitFrameName and _G[UnitFrameName .. "Texture"]);
 	if not UnitFrameTexture then
 		local UnitFrameTextureFrame = UnitFrame.textureFrame or (UnitFrameName and _G[UnitFrameName .. "TextureFrame"]);
 		if UnitFrameTextureFrame then
@@ -1814,7 +1823,8 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 							type(FrameTextureCoord[4]) == 'number' and FrameTextureCoord[4] or 1.0
 						);
 		else
-			CoverFrameTexture:SetTexCoord(0.0, 1.0, 0.0, 1.0);
+			-- CoverFrameTexture:SetTexCoord(0.0, 1.0, 0.0, 1.0);
+			CoverFrameTexture:SetTexCoord(UnitFrameTexture:GetTexCoord());
 		end
 		CoverFrame.CoverFrameTexture = CoverFrameTexture;
 		CoverFrame.UnitFrameTexture = UnitFrameTexture;
@@ -1839,8 +1849,8 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 
 	-- BELOW		name of object must be equal to its config key
 
-	local _HBar = UnitFrame.healthbar or (UnitFrameName and _G[UnitFrameName .. "HealthBar"]);
-	local _PBar = UnitFrame.manabar or (UnitFrameName and _G[UnitFrameName .. "ManaBar"]);
+	local _HBar = FrameDef._HealthBar or UnitFrame.healthbar or UnitFrame.HealthBar or (UnitFrameName and _G[UnitFrameName .. "HealthBar"]);
+	local _PBar = FrameDef._ManaBar or UnitFrame.manabar or UnitFrame.ManaBar or (UnitFrameName and _G[UnitFrameName .. "ManaBar"]);
 
 	if _HBar and _PBar then
 		local HBarTexture, PBarTexture, HBarValue, PBarValue, HBarPercentage, PBarPercentage = _VirtualWidget, _VirtualWidget, _VirtualWidget, _VirtualWidget, _VirtualWidget, _VirtualWidget;
@@ -2089,7 +2099,7 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 		-- CoverFrame.HBColor = _VirtualWidget;
 	end
 
-	local Portrait2D = UnitFrame.portrait or _G[UnitFrameName .. "Portrait"];
+	local Portrait2D = FrameDef._Portrait or UnitFrame.portrait or UnitFrame.Portrait or (UnitFrameName and _G[UnitFrameName .. "Portrait"]);
 	if FrameDef.Create3DPortrait and Portrait2D then
 		local w, h = Portrait2D:GetSize();
 		local Portrait3D = CreateFrame("PLAYERMODEL", nil, CoverFrame);
@@ -2223,7 +2233,7 @@ function MT.HookUnitFrame(UnitFrame, unit, FrameDef)
 
 	if configKey == 'party' then
 		local font, fontsize, fontflag = GameFontNormalSmall:GetFont();
-		_G[UnitFrameName .. "Name"]:SetFont(font, fontsize * 0.8, fontflag);
+		UnitFrame.Name:SetFont(font, fontsize * 0.8, fontflag);
 	end
 	function CoverFrame:ApplyScale()
 		local v = MT.GetConfig(configKey, 'Scale');
@@ -2413,11 +2423,11 @@ function MT.ToggleThreat()
 end
 
 function MT._Secure_SetUnitFramesDefaultPosition()
-	if not TargetFrame:IsUserPlaced() then
-		TargetFrame:SetUserPlaced(true);
+	-- if not TargetFrame:IsUserPlaced() then
+		TargetFrame:SetUserPlaced(false);
 		TargetFrame:ClearAllPoints();
 		TargetFrame:SetPoint("LEFT", PlayerFrame, "RIGHT", 100, 0);
-	end
+	-- end
 end
 function MT._Secure_SetPlayerFramePosition()
 	PlayerFrame:SetUserPlaced(true);
@@ -2425,8 +2435,8 @@ function MT._Secure_SetPlayerFramePosition()
 	PlayerFrame:SetPoint("CENTER", UIParent, "CENTER", VT.DB.pRelX, VT.DB.pRelY);
 end
 function MT._Secure_ResetPlayerFramePosition()
-	PlayerFrame:ClearAllPoints();
-	PlayerFrame_ResetUserPlacedPosition();
+	-- PlayerFrame:ClearAllPoints();
+	-- PlayerFrame_ResetUserPlacedPosition();
 end
 function MT._Secure_SetTargetFramePosition()
 	TargetFrame:SetUserPlaced(true);
@@ -2434,8 +2444,8 @@ function MT._Secure_SetTargetFramePosition()
 	TargetFrame:SetPoint("CENTER", UIParent, "CENTER", VT.DB.tRelX, VT.DB.tRelY);
 end
 function MT._Secure_ResetTargetFramePosition()
-	TargetFrame:ClearAllPoints();
-	TargetFrame_ResetUserPlacedPosition();
+	-- TargetFrame:ClearAllPoints();
+	-- TargetFrame_ResetUserPlacedPosition();
 	MT._Secure_SetUnitFramesDefaultPosition();
 end
 
@@ -2450,8 +2460,12 @@ end
 
 function MT.InitPlayerFrame()
 	local FrameDef = {
+		-- _Texture = PlayerFrameTexture,
+		_Portrait = PlayerPortrait,
+		-- _HealthBar = nil,
+		-- _ManaBar = nil,
 		PortraitPosition = "LEFT",
-		FrameTextureCoord = { 1.0, 0.09375, 0.0, 0.78125, },
+		-- FrameTextureCoord = { 1.0, 0.09375, 0.0, 0.78125, },
 		BarCoverTexture = true,
 		BarCreateValue = true,
 		BarCreatePercentage = true,
@@ -2822,21 +2836,6 @@ function MT.InitToFFrame()
 	-- end);
 end
 function MT.InitPartyFrames()
-	local FrameDef = {
-		PortraitPosition = "LEFT",
-		FrameTextureCoord = nil,
-		BarCoverTexture = true,
-		BarCreateValue = true,
-		BarCreatePercentage = true,
-		BarValuePosition = nil,
-		BarPercentagePosition = nil,
-		BarEventDriven = false,
-		BarTextFontSize = 10,
-		BarTextFontScale = 1.0,
-		Create3DPortrait = true,
-		CreateClass = true,
-		SubLayerLevelOffset = nil,
-	};
 	local function GROUP_ROSTER_UPDATE(self, event, ...)
 		After(0.1, function()
 			self:UpdatePowerType();
@@ -2882,77 +2881,124 @@ function MT.InitPartyFrames()
 		end
 		return CastingBarFrame_OnEvent(self, event, ...);
 	end
+	local UnitFrames = {  };
 	for i = 1, 4 do
-		local unit = 'party' .. i;
-		local CoverFrame = MT.HookUnitFrame(_G["PartyMemberFrame" .. i], unit, FrameDef);
-		CoverFrame.target = MT.CreatePartyTargetingFrame(CoverFrame, unit, "RIGHT", 50);
-		MT.CreatePartyAura(CoverFrame, unit);
-		CoverFrame.Class:SetScale(0.7);
-		CoverFrame.Class:ClearAllPoints();
-		CoverFrame.Class:SetPoint("TOPLEFT", 40, 2);
-		CoverFrame.GROUP_ROSTER_UPDATE = GROUP_ROSTER_UPDATE;
-		CoverFrame.UNIT_LEVEL = UNIT_LEVEL;
-		CoverFrame.UNIT_NAME_UPDATE = UNIT_NAME_UPDATE;
-		CoverFrame.RAID_TARGET_UPDATE = RAID_TARGET_UPDATE;
-		MT.FrameRegisterEvent(CoverFrame, "GROUP_ROSTER_UPDATE");
-		MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_LEVEL");
-		MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_NAME_UPDATE");
-		MT.FrameRegisterEvent(CoverFrame, "RAID_TARGET_UPDATE");
-		CoverFrame.Name = MT.CoverFontString(CoverFrame, _G["PartyMemberFrame" .. i .. "Name"], "OVERLAY", 6, nil, nil, false, nil, false, false);
-		CoverFrame.Texts[CoverFrame.Name] = "Name";
-		CoverFrame.NameBG = CoverFrame:CreateTexture(nil, "BACKGROUND");
-		CoverFrame.NameBG:SetPoint("TOPLEFT", CoverFrame.Name, "TOPLEFT", -2, 0);
-		CoverFrame.NameBG:SetPoint("BOTTOMRIGHT", CoverFrame.Name, "BOTTOMRIGHT", 2, 0);
-		CoverFrame.NameBG:SetColorTexture(0.0, 0.0, 0.0, 0.35);
-		MT.SecureHideLayer(_G["PartyMemberFrame" .. i .. "Name"]);
-		local _UpdateClass = CoverFrame.UpdateClass;
-		function CoverFrame:UpdateClass()
-			_UpdateClass(self);
-			local color = RAID_CLASS_COLORS[self.CLASS];
-			if color ~= nil then
-				self.Name:SetTextColor(color.r, color.g, color.b);
+		local UnitFrame = _G["PartyMemberFrame" .. i];
+		if not UnitFrame then
+			UnitFrame = PartyFrame["MemberFrame" .. i];
+		end
+		UnitFrames[i] = UnitFrame;
+		if UnitFrame then
+			if UnitFrame.PartyMemberOverlay then
+				UnitFrame.Name = UnitFrame.PartyMemberOverlay.Name;
+				UnitFrame.PVPIcon = UnitFrame.PartyMemberOverlay.PVPIcon;
+				UnitFrame.LeaderIcon = UnitFrame.PartyMemberOverlay.LeaderIcon;
+				UnitFrame.MasterIcon = UnitFrame.PartyMemberOverlay.MasterIcon;
 			else
-				self.Name:SetTextColor(1.0, 1.0, 1.0);
+				UnitFrame.Name = _G["PartyMemberFrame" .. i .. "Name"];
+				UnitFrame.PVPIcon = _G["PartyMemberFrame" .. i .. "PVPIcon"];
+				UnitFrame.LeaderIcon = _G["PartyMemberFrame" .. i .. "LeaderIcon"];
+				UnitFrame.MasterIcon = _G["PartyMemberFrame" .. i .. "MasterIcon"];
+				UnitFrame.PetFrame = _G["PartyMemberFrame" .. (i - 1) .. "PetFrame"];
 			end
 		end
-		CoverFrame.LevelText = CoverFrame:CreateFontString(nil, "OVERLAY");
-		CoverFrame.LevelText:SetFont(GameFontNormal:GetFont(), 11, "OUTLINE");
-		CoverFrame.LevelText:SetPoint("CENTER", CoverFrame, "BOTTOMLEFT", 10, 10);
-		CoverFrame.LevelText:Show();
-		CoverFrame.Texts[CoverFrame.LevelText] = "CoverFrame.LevelText";
-		CoverFrame.RaidTarget = CoverFrame:CreateTexture(nil, "OVERLAY");
-		CoverFrame.RaidTarget:SetSize(18, 18);
-		CoverFrame.RaidTarget:SetPoint("TOP", CoverFrame, "TOPLEFT", 26, 4);
-		CoverFrame.RaidTarget:SetTexture([[Interface\TargetingFrame\UI-RaidTargetingIcons]]);
-		CoverFrame:RAID_TARGET_UPDATE();
-		CoverFrame:GROUP_ROSTER_UPDATE();
-		CoverFrame.PVPIcon = MT.CoverTexture(CoverFrame, _G["PartyMemberFrame" .. i .. "PVPIcon"], "OVERLAY");
-		CoverFrame.LeaderIcon = MT.CoverTexture(CoverFrame, _G["PartyMemberFrame" .. i .. "LeaderIcon"], "OVERLAY");
-		CoverFrame.MasterIcon = MT.CoverTexture(CoverFrame, _G["PartyMemberFrame" .. i .. "MasterIcon"], "OVERLAY");
+	end
+	for i = 1, 4 do
+		local unit = 'party' .. i;
+		local UnitFrame = UnitFrames[i];
+		if UnitFrame then
+			local FrameDef = {
+				_Texture = UnitFrame.PartyMemberOverlay and UnitFrame.PartyMemberOverlay.Texture or nil,
+				PortraitPosition = "LEFT",
+				FrameTextureCoord = nil,
+				BarCoverTexture = true,
+				BarCreateValue = true,
+				BarCreatePercentage = true,
+				BarValuePosition = nil,
+				BarPercentagePosition = nil,
+				BarEventDriven = false,
+				BarTextFontSize = 10,
+				BarTextFontScale = 1.0,
+				Create3DPortrait = true,
+				CreateClass = true,
+				SubLayerLevelOffset = nil,
+			};
+			local CoverFrame = MT.HookUnitFrame(UnitFrame, unit, FrameDef);
+			CoverFrame.target = MT.CreatePartyTargetingFrame(CoverFrame, unit, "RIGHT", 50);
+			MT.CreatePartyAura(CoverFrame, unit);
+			CoverFrame.Class:SetScale(0.7);
+			CoverFrame.Class:ClearAllPoints();
+			CoverFrame.Class:SetPoint("TOPLEFT", 40, 2);
+			CoverFrame.GROUP_ROSTER_UPDATE = GROUP_ROSTER_UPDATE;
+			CoverFrame.UNIT_LEVEL = UNIT_LEVEL;
+			CoverFrame.UNIT_NAME_UPDATE = UNIT_NAME_UPDATE;
+			CoverFrame.RAID_TARGET_UPDATE = RAID_TARGET_UPDATE;
+			MT.FrameRegisterEvent(CoverFrame, "GROUP_ROSTER_UPDATE");
+			MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_LEVEL");
+			MT.FrameRegisterUnitEvent(CoverFrame, unit, "UNIT_NAME_UPDATE");
+			MT.FrameRegisterEvent(CoverFrame, "RAID_TARGET_UPDATE");
+			CoverFrame.Name = MT.CoverFontString(CoverFrame, UnitFrame.Name, "OVERLAY", 6, nil, nil, false, nil, false, false);
+			CoverFrame.Texts[CoverFrame.Name] = "Name";
+			CoverFrame.NameBG = CoverFrame:CreateTexture(nil, "BACKGROUND");
+			CoverFrame.NameBG:SetPoint("TOPLEFT", CoverFrame.Name, "TOPLEFT", -2, 0);
+			CoverFrame.NameBG:SetPoint("BOTTOMRIGHT", CoverFrame.Name, "BOTTOMRIGHT", 2, 0);
+			CoverFrame.NameBG:SetColorTexture(0.0, 0.0, 0.0, 0.35);
+			MT.SecureHideLayer(UnitFrame.Name);
+			local _UpdateClass = CoverFrame.UpdateClass;
+			function CoverFrame:UpdateClass()
+				_UpdateClass(self);
+				local color = RAID_CLASS_COLORS[self.CLASS];
+				if color ~= nil then
+					self.Name:SetTextColor(color.r, color.g, color.b);
+				else
+					self.Name:SetTextColor(1.0, 1.0, 1.0);
+				end
+			end
+			CoverFrame.LevelText = CoverFrame:CreateFontString(nil, "OVERLAY");
+			CoverFrame.LevelText:SetFont(GameFontNormal:GetFont(), 11, "OUTLINE");
+			CoverFrame.LevelText:SetPoint("CENTER", CoverFrame, "BOTTOMLEFT", 10, 10);
+			CoverFrame.LevelText:Show();
+			CoverFrame.Texts[CoverFrame.LevelText] = "CoverFrame.LevelText";
+			CoverFrame.RaidTarget = CoverFrame:CreateTexture(nil, "OVERLAY");
+			CoverFrame.RaidTarget:SetSize(18, 18);
+			CoverFrame.RaidTarget:SetPoint("TOP", CoverFrame, "TOPLEFT", 26, 4);
+			CoverFrame.RaidTarget:SetTexture([[Interface\TargetingFrame\UI-RaidTargetingIcons]]);
+			CoverFrame:RAID_TARGET_UPDATE();
+			CoverFrame:GROUP_ROSTER_UPDATE();
+			CoverFrame.PVPIcon = MT.CoverTexture(CoverFrame, UnitFrame.PVPIcon, "OVERLAY");
+			CoverFrame.LeaderIcon = MT.CoverTexture(CoverFrame, UnitFrame.LeaderIcon, "OVERLAY");
+			CoverFrame.MasterIcon = MT.CoverTexture(CoverFrame, UnitFrame.MasterIcon, "OVERLAY");
 
-		if not VT.IsVanilla and not VT.IsRetail then
-			local Cast = CreateFrame('STATUSBAR', "PartyMemberFrame" .. i .. "CastingBar", CoverFrame, "SmallCastingBarFrameTemplate");
-			Cast:SetScale(0.8);
-			Cast:SetPoint("LEFT", CoverFrame, "LEFT", 20, 0);
-			Cast:SetPoint("TOP", _G["PartyMemberFrame" .. i .. "Debuff1"], "BOTTOM", 0, -2);
-			CastingBarFrame_OnLoad(Cast, unit, true, true);
-			Cast:RegisterEvent("GROUP_ROSTER_UPDATE");
-			Cast:RegisterEvent("PARTY_MEMBER_ENABLE");
-			Cast:RegisterEvent("PARTY_MEMBER_DISABLE");
-			Cast:RegisterEvent("PARTY_LEADER_CHANGED");
-			Cast:SetScript("OnEvent", CastOnEvent);
-			Cast.OnEvent = CastOnEvent;
-			CoverFrame.CastingBar = Cast;
+			if not VT.IsVanilla and not VT.IsTBC and not VT.IsRetail then
+				local Cast = CreateFrame('STATUSBAR', "PartyMemberFrame" .. i .. "CastingBar", CoverFrame, "SmallCastingBarFrameTemplate");
+				Cast:SetScale(0.8);
+				Cast:SetPoint("LEFT", CoverFrame, "LEFT", 20, 0);
+				Cast:SetPoint("TOP", _G["PartyMemberFrame" .. i .. "Debuff1"], "BOTTOM", 0, -2);
+				if Cast.OnLoad then
+					Cast:OnLoad(unit, true, true);
+				else
+					CastingBarFrame_OnLoad(Cast, unit, true, true);
+				end
+				Cast:RegisterEvent("GROUP_ROSTER_UPDATE");
+				Cast:RegisterEvent("PARTY_MEMBER_ENABLE");
+				Cast:RegisterEvent("PARTY_MEMBER_DISABLE");
+				Cast:RegisterEvent("PARTY_LEADER_CHANGED");
+				Cast:SetScript("OnEvent", CastOnEvent);
+				Cast.OnEvent = CastOnEvent;
+				CoverFrame.CastingBar = Cast;
+			end
+
+			CoverFrame:UNIT_AURA();
 		end
-
-		CoverFrame:UNIT_AURA();
 	end
 
 	MT.RunAfterCombat(function()
 		for i = 2, 4 do
-			local UnitFrame = _G["PartyMemberFrame" .. i];
-			UnitFrame:ClearAllPoints();
-			UnitFrame:SetPoint("TOPLEFT", _G["PartyMemberFrame" .. (i - 1) .. "PetFrame"], "BOTTOMLEFT", -23, -22);
+			local UnitFrame = UnitFrames[i];
+			if UnitFrame then
+				UnitFrame:ClearAllPoints();
+				UnitFrame:SetPoint("TOPLEFT", UnitFrames[i - 1].PetFrame, "BOTTOMLEFT", -23, -22);
+			end
 		end
 	end);
 end
@@ -2964,10 +3010,18 @@ function MT.ApplyFrameSettings()
 	MT.SetUnitFrameBorder(MT.CoverFrames['player'], VT.DB.playerTexture);
 	MT.SetUnitFrameBorder(MT.CoverFrames['pet'], 4);
 	MT.SetUnitFrameBorder(MT.CoverFrames['targettarget'], 5);
-	MT.SetUnitFrameBorder(MT.CoverFrames['party1'], 6);
-	MT.SetUnitFrameBorder(MT.CoverFrames['party2'], 6);
-	MT.SetUnitFrameBorder(MT.CoverFrames['party3'], 6);
-	MT.SetUnitFrameBorder(MT.CoverFrames['party4'], 6);
+	if MT.CoverFrames['party1'] then
+		MT.SetUnitFrameBorder(MT.CoverFrames['party1'], 6);
+	end
+	if MT.CoverFrames['party2'] then
+		MT.SetUnitFrameBorder(MT.CoverFrames['party2'], 6);
+	end
+	if MT.CoverFrames['party3'] then
+		MT.SetUnitFrameBorder(MT.CoverFrames['party3'], 6);
+	end
+	if MT.CoverFrames['party4'] then
+		MT.SetUnitFrameBorder(MT.CoverFrames['party4'], 6);
+	end
 	if not VT.IsVanilla and not VT.IsRetail then
 		if VT.DB.castBar then
 			MT.AttachCastBar(PlayerFrame, CastingBarFrame, nil, 32, 20, 160, 32, "RIGHT");
@@ -2998,9 +3052,9 @@ function MT.ApplyFrameSettings()
 	if VT.DB.playerPlaced then
 		MT.RunAfterCombat(MT._Secure_SetPlayerFramePosition);
 		MT.RunAfterCombat(MT._Secure_SetTargetFramePosition);
-	-- else
-	-- 	MT.RunAfterCombat(MT._Secure_ResetPlayerFramePosition);
-	-- 	MT.RunAfterCombat(MT._Secure_ResetTargetFramePosition);
+	else
+		MT.RunAfterCombat(MT._Secure_ResetPlayerFramePosition);
+		MT.RunAfterCombat(MT._Secure_ResetTargetFramePosition);
 	end
 	if (not VT.IsVanilla and not VT.IsRetail) and VT.DB.ShiftFocus then
 		MT.RunAfterCombat(MT._Secure_ToggleShiftFocus);
