@@ -1471,7 +1471,6 @@ function MT.TogglePartyAura()
 	end
 end
 function MT.TogglePartyCastingBar()
-	do return end
 	if VT.DB.partyCast then
 		for i = 1, 4 do
 			local CastingBar = MT.CoverFrames['party' .. i].CastingBar;
@@ -2423,11 +2422,11 @@ function MT.ToggleThreat()
 end
 
 function MT._Secure_SetUnitFramesDefaultPosition()
-	-- if not TargetFrame:IsUserPlaced() then
+	if not TargetFrame:IsUserPlaced() then
 		TargetFrame:SetUserPlaced(false);
 		TargetFrame:ClearAllPoints();
 		TargetFrame:SetPoint("LEFT", PlayerFrame, "RIGHT", 100, 0);
-	-- end
+	end
 end
 function MT._Secure_SetPlayerFramePosition()
 	PlayerFrame:SetUserPlaced(true);
@@ -2435,8 +2434,11 @@ function MT._Secure_SetPlayerFramePosition()
 	PlayerFrame:SetPoint("CENTER", UIParent, "CENTER", VT.DB.pRelX, VT.DB.pRelY);
 end
 function MT._Secure_ResetPlayerFramePosition()
-	-- PlayerFrame:ClearAllPoints();
-	-- PlayerFrame_ResetUserPlacedPosition();
+	if PlayerFrame_ResetUserPlacedPosition then
+		PlayerFrame:SetUserPlaced(false);
+		PlayerFrame:ClearAllPoints();
+		PlayerFrame_ResetUserPlacedPosition();
+	end
 end
 function MT._Secure_SetTargetFramePosition()
 	TargetFrame:SetUserPlaced(true);
@@ -2444,8 +2446,11 @@ function MT._Secure_SetTargetFramePosition()
 	TargetFrame:SetPoint("CENTER", UIParent, "CENTER", VT.DB.tRelX, VT.DB.tRelY);
 end
 function MT._Secure_ResetTargetFramePosition()
-	-- TargetFrame:ClearAllPoints();
-	-- TargetFrame_ResetUserPlacedPosition();
+	if TargetFrame_ResetUserPlacedPosition then
+		TargetFrame:SetUserPlaced(false);
+		TargetFrame:ClearAllPoints();
+		TargetFrame_ResetUserPlacedPosition();
+	end
 	MT._Secure_SetUnitFramesDefaultPosition();
 end
 
@@ -2894,12 +2899,13 @@ function MT.InitPartyFrames()
 				UnitFrame.PVPIcon = UnitFrame.PartyMemberOverlay.PVPIcon;
 				UnitFrame.LeaderIcon = UnitFrame.PartyMemberOverlay.LeaderIcon;
 				UnitFrame.MasterIcon = UnitFrame.PartyMemberOverlay.MasterIcon;
+				-- UnitFrame.PetFrame = UnitFrame.PetFrame;
 			else
 				UnitFrame.Name = _G["PartyMemberFrame" .. i .. "Name"];
 				UnitFrame.PVPIcon = _G["PartyMemberFrame" .. i .. "PVPIcon"];
 				UnitFrame.LeaderIcon = _G["PartyMemberFrame" .. i .. "LeaderIcon"];
 				UnitFrame.MasterIcon = _G["PartyMemberFrame" .. i .. "MasterIcon"];
-				UnitFrame.PetFrame = _G["PartyMemberFrame" .. (i - 1) .. "PetFrame"];
+				UnitFrame.PetFrame = _G["PartyMemberFrame" .. i .. "PetFrame"];
 			end
 		end
 	end
@@ -2997,7 +3003,7 @@ function MT.InitPartyFrames()
 			local UnitFrame = UnitFrames[i];
 			if UnitFrame then
 				UnitFrame:ClearAllPoints();
-				UnitFrame:SetPoint("TOPLEFT", UnitFrames[i - 1].PetFrame, "BOTTOMLEFT", -23, -22);
+				UnitFrame:SetPoint("TOPLEFT", UnitFrames[i - 1].PetFrame or UnitFrames[i - 1], "BOTTOMLEFT", -23, -22);
 			end
 		end
 	end);
@@ -3045,16 +3051,19 @@ function MT.ApplyFrameSettings()
 	MT.RunAfterCombat(MT._Secure_TogglePartyTargetingFrame);
 	MT.TogglePartyTargetingFrameStyle();
 	MT.TogglePartyAura();
-	if not VT.IsVanilla and not VT.IsRetail then
+	if not VT.IsVanilla and not VT.IsTBC and not VT.IsRetail then
 		MT.TogglePartyCastingBar();
 	end
 	MT.RunAfterCombat(MT._Secure_ToggleToTTarget);
-	if VT.DB.playerPlaced then
-		MT.RunAfterCombat(MT._Secure_SetPlayerFramePosition);
-		MT.RunAfterCombat(MT._Secure_SetTargetFramePosition);
-	else
-		MT.RunAfterCombat(MT._Secure_ResetPlayerFramePosition);
-		MT.RunAfterCombat(MT._Secure_ResetTargetFramePosition);
+	if not VT.IsTBC and not VT.IsRetail then
+		if VT.DB.playerPlaced then
+			MT.RunAfterCombat(MT._Secure_SetPlayerFramePosition);
+			MT.RunAfterCombat(MT._Secure_SetTargetFramePosition);
+		else
+			-- MT.RunAfterCombat(MT._Secure_ResetPlayerFramePosition);
+			-- MT.RunAfterCombat(MT._Secure_ResetTargetFramePosition);
+			MT.RunAfterCombat(MT._Secure_SetUnitFramesDefaultPosition);
+		end
 	end
 	if (not VT.IsVanilla and not VT.IsRetail) and VT.DB.ShiftFocus then
 		MT.RunAfterCombat(MT._Secure_ToggleShiftFocus);

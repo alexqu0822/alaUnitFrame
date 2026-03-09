@@ -372,8 +372,11 @@ local function ValueBoxOnEnterPressed(self)
 	if key and VT.DB[key] then
 		local value = tonumber(self:GetText()) or 0.0;
 		VT.DB[key] = value;
-		MT.RunAfterCombat(MT._Secure_SetPlayerFramePosition);
-		MT.RunAfterCombat(MT._Secure_SetTargetFramePosition);
+		if key == "pRelX" or key == "pRelY" then
+			MT.RunAfterCombat(MT._Secure_SetPlayerFramePosition);
+		elseif key == "tRelX" or key == "tRelY" then
+			MT.RunAfterCombat(MT._Secure_SetTargetFramePosition);
+		end
 	end
 	self:ClearFocus();
 end
@@ -421,11 +424,13 @@ local function CreateValueBox(specific, key, label, i, j)
 end
 
 function MT.InitConfigFrame()
-	CreateCheckBox(false, "playerPlaced", L["user_placed"], 1, 1);
-	CreateValueBox(false, "pRelX", L["x_offset_of_PlayerFrame"], 1, 2);
-	CreateValueBox(false, "pRelY", L["y_offset_of_PlayerFrame"], 2, 2);
-	CreateValueBox(false, "tRelX", L["x_offset_of_TargetFrame"], 1, 3);
-	CreateValueBox(false, "tRelY", L["y_offset_of_TargetFrame"], 2, 3);
+	if not VT.IsTBC and not VT.IsRetail then
+		CreateCheckBox(false, "playerPlaced", L["user_placed"], 1, 1);
+		CreateValueBox(false, "pRelX", L["x_offset_of_PlayerFrame"], 1, 2);
+		CreateValueBox(false, "pRelY", L["y_offset_of_PlayerFrame"], 2, 2);
+		CreateValueBox(false, "tRelX", L["x_offset_of_TargetFrame"], 1, 3);
+		CreateValueBox(false, "tRelY", L["y_offset_of_TargetFrame"], 2, 3);
+	end
 
 	CreateCheckBox(false, "dark", L["dark_portraid_texture"], 1, 4);
 	CreateDrop(false, "playerTexture", L["playerTexture"], 2, 4, {
