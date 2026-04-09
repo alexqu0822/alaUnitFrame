@@ -424,7 +424,7 @@ local function CreateValueBox(specific, key, label, i, j)
 end
 
 function MT.InitConfigFrame()
-	if not VT.IsTBC and not VT.IsRetail then
+	if not VT.IsTBC and not VT.IsWrath and not VT.IsRetail then
 		CreateCheckBox(false, "playerPlaced", L["user_placed"], 1, 1);
 		CreateValueBox(false, "pRelX", L["x_offset_of_PlayerFrame"], 1, 2);
 		CreateValueBox(false, "pRelY", L["y_offset_of_PlayerFrame"], 2, 2);
@@ -452,7 +452,7 @@ function MT.InitConfigFrame()
 	CreateCheckBox(false, "TargetRetailStyle", L["target_is_retail_style"], 2, 9);
 
 	CreateCheckBox(false, "partyAura", L["party_aura"], 1, 10);
-	if not VT.IsVanilla and not VT.IsRetail then
+	if VT.IsWrath then
 		CreateCheckBox(false, "partyCast", L["party_cast"], 2, 10);
 	end
 	if not VT.IsVanilla and not VT.IsRetail then

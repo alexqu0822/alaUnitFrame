@@ -2548,7 +2548,7 @@ function MT.InitPlayerFrame()
 	CoverFrame.CombatStatus:SetSize(PlayerFrameTexture:GetSize());
 	CoverFrame.CombatStatus:SetPoint("CENTER", PlayerFrameTexture);
 	CoverFrame.CombatStatus:SetTexture("interface\\targetingframe\\ui-targetingframe-flash");
-	CoverFrame.CombatStatus:SetTexCoord(1.0, 0.09375, 0.0, 0.78125 / 4);
+	CoverFrame.CombatStatus:SetTexCoord(0.875, 0.09375, 0.0, 0.18);
 	CoverFrame.CombatStatus:Hide();
 	CoverFrame.CombatStatus:SetVertexColor(1.0, 0.0, 0.0, 1.0);
 	if InCombatLockdown() then
@@ -2868,6 +2868,7 @@ function MT.InitPartyFrames()
 			self.RaidTarget:Show();
 		end
 	end
+	local CastingBarFrame_OnEvent = CastingBarFrame_OnEvent or CastingBarMixin.OnEvent;
 	local function CastOnEvent(self, event, ...)
 		if (event == "GROUP_ROSTER_UPDATE" and not IsInRaid()) or (event == "PARTY_MEMBER_ENABLE") or (event == "PARTY_MEMBER_DISABLE") or (event == "PARTY_LEADER_CHANGED") then
 			local unit = self.unit;
@@ -2975,11 +2976,11 @@ function MT.InitPartyFrames()
 			CoverFrame.LeaderIcon = MT.CoverTexture(CoverFrame, UnitFrame.LeaderIcon, "OVERLAY");
 			CoverFrame.MasterIcon = MT.CoverTexture(CoverFrame, UnitFrame.MasterIcon, "OVERLAY");
 
-			if not VT.IsVanilla and not VT.IsTBC and not VT.IsRetail then
+			if VT.IsWrath then
 				local Cast = CreateFrame('STATUSBAR', "PartyMemberFrame" .. i .. "CastingBar", CoverFrame, "SmallCastingBarFrameTemplate");
 				Cast:SetScale(0.8);
 				Cast:SetPoint("LEFT", CoverFrame, "LEFT", 20, 0);
-				Cast:SetPoint("TOP", _G["PartyMemberFrame" .. i .. "Debuff1"], "BOTTOM", 0, -2);
+				Cast:SetPoint("TOP", CoverFrame, "BOTTOM", 0, -10);
 				if Cast.OnLoad then
 					Cast:OnLoad(unit, true, true);
 				else
@@ -3051,11 +3052,11 @@ function MT.ApplyFrameSettings()
 	MT.RunAfterCombat(MT._Secure_TogglePartyTargetingFrame);
 	MT.TogglePartyTargetingFrameStyle();
 	MT.TogglePartyAura();
-	if not VT.IsVanilla and not VT.IsTBC and not VT.IsRetail then
+	if VT.IsWrath then
 		MT.TogglePartyCastingBar();
 	end
 	MT.RunAfterCombat(MT._Secure_ToggleToTTarget);
-	if not VT.IsTBC and not VT.IsRetail then
+	if not VT.IsTBC and not VT.IsWrath and not VT.IsRetail then
 		if VT.DB.playerPlaced then
 			MT.RunAfterCombat(MT._Secure_SetPlayerFramePosition);
 			MT.RunAfterCombat(MT._Secure_SetTargetFramePosition);
@@ -3140,3 +3141,5 @@ function MT.InitFrames()
 
 	MT.ApplyFrameSettings();
 end
+
+__ala_meta__.UnitFrame = __private;
